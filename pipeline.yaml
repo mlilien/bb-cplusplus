@@ -32,6 +32,23 @@ resources:
       repository: amazon/aws-cli
       tag: latest
 
+  - name: image-((bb_name))-builder
+    type: docker-image
+    source:
+      repository: ((bb_destination_builder))
+      username: ((registry_user))
+      password: ((registry_password))
+      tag: latest
+      insecure_registries: ((bb_destination_insecure_registries))
+
+  - name: image-((bb_name))-runtime
+    type: docker-image
+    source:
+      repository: ((bb_destination_runtime))
+      username: ((registry_user))
+      password: ((registry_password))
+      tag: latest
+      insecure_registries: ((bb_destination_insecure_registries))
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -86,3 +103,25 @@ jobs:
         params:
           file: gitversion/gitversion-*.tar.gz
           acl: public-read
+
+  - name: Create docker images for ((bb_name)) and push them
+    public: true
+    plan:
+      - in_parallel:
+          - get: source
+          - get: s3-gitversion
+            passed: [Generate gitversion and put it on S3]
+            trigger: true
+            params:
+              unpack: true
+      - in_parallel:
+          - put: image-((bb_name))-builder
+            params:
+              build: source/cplusplus/builder
+              dockerfile: source/cplusplus/builder/Dockerfile
+              additional_tags: s3-gitversion/version
+          - put: image-((bb_name))-runtime
+            params:
+              build: source/cplusplus/runtime
+              dockerfile: source/cplusplus/runtime/Dockerfile
+              additional_tags: s3-gitversion/version

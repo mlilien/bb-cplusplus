@@ -1,10 +1,30 @@
 <img src="https://raw.githubusercontent.com/elbb/bb-buildingblock/master/.assets/logo.png" height="200">
 
-# embedded linux building block template
+# # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
-This code serves as a template for the creation of further building blocks with the purpose of giving all blocks a uniform structure and usage.
+This building block offers a way to build and run any C++ project in a containerized manner and offers:
+
+-   C++ builder docker image
+-   C++ runtime docker image
+-   local and CI/CD build system
+
+There is also an example that shows the usage with a 'hello world' application.
+
+# Build
+
+It is highly recommended to modify this building block for your needs. For the integration
+into your project you should modify the builder and runtime Dockerfiles. 
+
+The images can be created locally manually or e.g. via dobi (<https://github.com/dnephin/dobi>) or via concourse CI.
 
 ## Using dobi for local build
+
+### Prerequisites
+
+-   dobi (<https://github.com/dnephin/dobi>)
+-   docker (<https://docs.docker.com/install/>)
+
+### Using dobi
 
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
@@ -15,12 +35,6 @@ By default three dobi resources are predefined (but not implemented):
 ./dobi.sh test   # run all tests
 ./dobi.sh deploy # deploy the building block
 ```
-
-These point to the resources defined in dobi.yaml.
-The separation between meta.yaml and dobi.yaml is necessary to integrate the building block into another building block via dobi.
-
-Version information is generated automatically from git history by using building block bb-gitversion (<https://github.com/elbb/bb-gitversion>).
-In the dobi files you can reference to this generated version information by accessing them with e.g. `{env.GitVersion_MajorMinorPatch}`. See the `gen/env/gitversion.env` file for defined env variables to use.
 
 ## Using concourse CI for a CI/CD build
 
@@ -33,11 +47,9 @@ In further releases there will be a key value store to keep track of the users c
 Before setting the pipeline you might login first to your concourse instance `fly -t <target> login --concourse-url http://<concourse>:<port>`. See the [fly documentation](https://concourse-ci.org/fly.html) for more help.
 Upload the pipeline file with fly:
 
-    $ fly -t <target> set-pipeline -n -p bb-buildingblock -l ci/config.yaml -l ci/credentials.yaml -c pipeline.yaml
+    $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -c pipeline.yaml
 
 After successfully uploading the pipeline to concourse CI login and unpause it. After that the pipeline should be triggered by new commits on the master branch (or new tags if enabled in `pipeline.yaml`).
-
-See the [integration documentation](example/ci/README.md) on how to modify the `pipeline.yaml` and config files for your building block.
 
 # What is embedded linux building blocks
 
