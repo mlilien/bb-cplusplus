@@ -1,7 +1,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
-#include "version.h"
+#include <version.h>
 
 int main(int argc, char* argv[])
 {
