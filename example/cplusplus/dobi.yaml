@@ -36,7 +36,7 @@ job=build-hello-world:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
-    - "VERSION_HEADER=/gen/cpp/version.h"
+    - "ELBB_HEADER_PATH=/gen/cpp/"
   annotations:
     description: "-> build hello-world"
 
