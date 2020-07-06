@@ -117,11 +117,11 @@ jobs:
       - in_parallel:
           - put: image-((bb_name))-builder
             params:
-              build: source/cplusplus/builder
-              dockerfile: source/cplusplus/builder/Dockerfile
+              build: builder
+              dockerfile: builder/Dockerfile
               additional_tags: s3-gitversion/version
           - put: image-((bb_name))-runtime
             params:
-              build: source/cplusplus/runtime
-              dockerfile: source/cplusplus/runtime/Dockerfile
+              build: runtime
+              dockerfile: runtime/Dockerfile
               additional_tags: s3-gitversion/version
