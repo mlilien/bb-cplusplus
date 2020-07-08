@@ -6,6 +6,7 @@ bb_name: bb-cplusplus
 ## Specifies the destination of the docker image artifact
 bb_destination_builder: elbb/bb-cplusplus-builder
 bb_destination_runtime: elbb/bb-cplusplus-runtime
+bb_destination_dev_runtime: elbb/bb-cplusplus-dev-runtime
 ## Specifies insecure docker registries, format "host:port" or "ip:port"
 bb_destination_insecure_registries: []
 

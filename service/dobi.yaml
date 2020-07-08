@@ -28,7 +28,7 @@ job=cplusplus-service-build:
     - mount-cplusplus-service-build
     - mount-cplusplus-service-install
     - mount-cplusplus-service-version
-  command: sh -c 'cd /build && cmake /source -DCMAKE_INSTALL_PREFIX=/install && make ${COMPONENT} && make install'
+  command: sh -c 'cd /build && conan install /source && cmake /source -DCMAKE_INSTALL_PREFIX=/install && make ${COMPONENT} && make install'
   sources:
     - service
   artifact:

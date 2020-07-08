@@ -1,10 +1,35 @@
 # ===================================================
 # images
 # ===================================================
-image=image-cplusplus-runtime:
-  image: elbb/bb-cplusplus-runtime
+image=image-cplusplus-runtime-x86_64:
+  image: elbb/bb-cplusplus-runtime/x86_64
   context: runtime
   tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    ARCH: "amd64"
+
+image=image-cplusplus-dev-runtime-x86_64:
+  image: elbb/bb-cplusplus-dev-runtime/x86_64
+  context: runtime
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    ARCH: "amd64"
+    DEV: "1"
+
+image=image-cplusplus-runtime-aarch64:
+  image: elbb/bb-cplusplus-runtime/aarch64
+  context: runtime
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    ARCH: "arm64v8"
+
+image=image-cplusplus-dev-runtime-aarch64:
+  image: elbb/bb-cplusplus-dev-runtime/aarch64
+  context: runtime
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    ARCH: "arm64v8"
+    DEV: "1"
 
 # ===================================================
 # alias
@@ -12,8 +37,14 @@ image=image-cplusplus-runtime:
 
 alias=cplusplus-runtime-build:
   tasks:
-    - image-cplusplus-runtime
+    - image-cplusplus-runtime-x86_64
+    - image-cplusplus-dev-runtime-x86_64
+    - image-cplusplus-runtime-aarch64
+    - image-cplusplus-dev-runtime-aarch64
 
 alias=cplusplus-runtime-deploy:
   tasks:
-    - image-cplusplus-runtime:push
+    - image-cplusplus-runtime-x86_64:push
+    - image-cplusplus-runtime-aarch64:push
+    - image-cplusplus-runtime-aarch64:push
+    - image-cplusplus-dev-runtime-aarch64:push
