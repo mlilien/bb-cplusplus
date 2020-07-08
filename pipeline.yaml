@@ -120,14 +120,14 @@ jobs:
       - in_parallel:
           - put: image-((bb_name))-builder
             params:
-              build: source/cplusplus/builder
-              dockerfile: source/cplusplus/builder/Dockerfile
+              build: source/builder
+              dockerfile: source/builder/Dockerfile
               latest: false
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
           - put: image-((bb_name))-runtime
             params:
-              build: source/cplusplus/runtime
-              dockerfile: source/cplusplus/runtime/Dockerfile
+              build: source/runtime
+              dockerfile: source/runtime/Dockerfile
               latest: false
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
 
@@ -140,12 +140,12 @@ jobs:
       - in_parallel:
         - put: image-((bb_name))-builder
           params:
-            build: source-release/cplusplus/builder
-            dockerfile: source-release/cplusplus/builder/Dockerfile
+            build: source-release/builder
+            dockerfile: source-release/builder/Dockerfile
             latest: true
         - put: image-((bb_name))-runtime
           params:
-            build: source-release/cplusplus/runtime
-            dockerfile: source-release/cplusplus/runtime/Dockerfile
+            build: source-release/runtime
+            dockerfile: source-release/runtime/Dockerfile
             latest: true
             
