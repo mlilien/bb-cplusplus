@@ -4,7 +4,7 @@
 image=image-cplusplus-builder:
   image: elbb/bb-cplusplus-builder
   context: builder
-  tags: ["{env.GitVersionBranch}"]
+  tags: ["{env.GitVersion_BranchVersion}"]
 
 # ===================================================
 # alias
