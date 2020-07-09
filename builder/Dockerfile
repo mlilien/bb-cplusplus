@@ -1,21 +1,26 @@
+FROM debian:10.4-slim
 
-FROM conanio/gcc9-armv8:1.26.1
-
-LABEL maintainer="elbb@conplement.de" 
-LABEL description="This is a builder image for C++ components on x86_64 and armv8 architectures" 
+LABEL maintainer="elbb@conplement.de"
+LABEL description="This is a builder image for C++ components on x86_64 and armv8 architectures"
 LABEL vendor="conplement AG"
 LABEL uri="https://github.com/elbb/bb-cplusplus"
-
-USER root
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
     apt-utils \
+    build-essential \
+    crossbuild-essential-arm64 \
+    cmake \
+    python3-pip \
     gosu && \
     apt-get clean
+RUN pip3 install setuptools wheel
+RUN pip3 install conan
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+COPY conan.armv8.profile .
 
 ENV BUILD_DIR=${BUILD_DIR:-/build}
 ENV CONAN_USER_HOME=${BUILD_DIR:-/build}

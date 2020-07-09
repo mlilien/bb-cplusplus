@@ -1,7 +1,7 @@
 ARG ARCH
-FROM ${ARCH}/debian:9.12-slim
-LABEL maintainer="elbb@conplement.de" 
-LABEL description="This is a runtime image for C++ components on ${ARCH} architecture" 
+FROM ${ARCH}/debian:10.4-slim
+LABEL maintainer="elbb@conplement.de"
+LABEL description="This is a runtime image for C++ components on ${ARCH} architecture"
 LABEL vendor="conplement AG"
 LABEL uri="https://github.com/elbb/bb-cplusplus"
 
