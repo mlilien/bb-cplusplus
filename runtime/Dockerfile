@@ -7,14 +7,11 @@ LABEL uri="https://github.com/elbb/bb-cplusplus"
 
 ARG DEV
 RUN if [ "${DEV}" = "1" ]; then export DEV_PACKAGES="gdb"; fi; \
-    echo DEV=${DEV}; \
-    echo DEV_PACKAGES=${DEV_PACKAGES}; \
     apt-get update &&  \
     apt-get install -y --no-install-recommends \
     gosu \
     ${DEV_PACKAGES} && \
     apt-get clean
-
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

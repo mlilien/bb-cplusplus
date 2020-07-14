@@ -16,4 +16,4 @@ fi
 source gen/gitversion/env/gitversion.env
 
 # execute dobi with meta as default
-exec dobi --filename meta.yaml ${@}
+exec env dobi --filename meta.yaml ${@}

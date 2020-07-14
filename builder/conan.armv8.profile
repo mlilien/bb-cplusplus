@@ -10,7 +10,7 @@ arch=armv8
 arch_build=x86_64
 compiler=gcc
 compiler.version=8
-compiler.libcxx=libstdc++
+compiler.libcxx=libstdc++11
 build_type=Release
 [options]
 [build_requires]
