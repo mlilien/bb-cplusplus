@@ -2,14 +2,17 @@
 
 _int()
 {
-    echo "Catched SIGINT"
     kill -INT ${pid}
+    sync
+    echo "Catched and handled SIGINT"
+
 }
 
 _term()
 {
-    echo "Catched SIGTERM"
-    killall -TERM ${pid}
+    kill -TERM ${pid}
+    sync
+    echo "Catched and handled SIGTERM"
 }
 
 trap _term SIGTERM
