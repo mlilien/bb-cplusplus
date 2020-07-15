@@ -11,5 +11,5 @@ LABEL uri="https://github.com/elbb/bb-cplusplus"
 
 ARG RUNTIME_ARCH
 ARG DEV
-COPY ./gen/cplusplus-service/${RUNTIME_ARCH}/${DEV:+dev/}cplusplus_service ./usr/local/bin/
+COPY ./gen/cplusplus-service/${RUNTIME_ARCH}/${DEV:+dev/}cplusplus_service /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/usr/local/bin/cplusplus_service"]
