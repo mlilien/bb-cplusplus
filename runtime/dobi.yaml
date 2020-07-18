@@ -4,7 +4,7 @@
 image=image-cplusplus-runtime:
   image: elbb/bb-cplusplus-runtime
   context: runtime
-  tags: ["{env.GitVersionBranch}"]
+  tags: ["{env.GitVersion_BranchVersion}"]
 
 # ===================================================
 # alias
