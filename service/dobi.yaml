@@ -19,6 +19,16 @@ mount=mount-cplusplus-service-version:
   path: /usr/local/include/elbb/
 
 # ===================================================
+# images
+# ===================================================
+
+image=image-codechecker:
+  image: codechecker
+  context: codechecker
+  tags: [latest]  
+
+
+# ===================================================
 # jobs
 # ===================================================
 job=cplusplus-service-build:
@@ -38,6 +48,29 @@ job=cplusplus-service-build:
     - "COMPONENT={env.COMPONENT:all}"
   annotations:
     description: "-> build clpusplus-service"
+
+job=cplusplus-service-analyze:
+  use: image-codechecker
+  depends: [image-codechecker, cplusplus-service-build]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build
+    - mount-cplusplus-service-install
+    - mount-cplusplus-service-version
+  # Connect the container to the `dev environment` network
+  net-mode: 'devenvconcourse_default'
+  command: sh -c 'cd /build && CodeChecker analyze compile_commands.json -o reports/ &&
+                               CodeChecker store reports/ --name "${PROJECT}" --url http://codechecker-web:8001/Default'
+  sources:
+    - service
+  artifact:
+    - gen/cplusplus-service
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "COMPONENT={env.COMPONENT:all}"
+    - "PROJECT={project}"
+  annotations:
+    description: "-> analyze clpusplus-service"    
 
 # ===================================================
 # alias
