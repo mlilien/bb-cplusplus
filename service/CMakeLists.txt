@@ -5,9 +5,9 @@ project(cplusplus_service)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 
 add_executable(cplusplus_service src/main.cpp)
-target_include_directories(cplusplus_service PUBLIC
+target_include_directories(cplusplus_service PRIVATE
   ${CONAN_INCLUDE_DIRS_BOOST}
-  /usr/local/include/elbb
+  /usr/local/include
 )
 target_link_libraries(cplusplus_service
   pthread

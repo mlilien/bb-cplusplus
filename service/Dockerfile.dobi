@@ -3,7 +3,7 @@ ARG BB_DOCKER_NAMESPACE
 ARG RUNTIME_ARCH
 ARG RUNTIME_TAG
 ARG DEV
-FROM ${BB_DOCKER_NAMESPACE:-elbb}/bb-cplusplus${DEV:+-dev}-runtime/${RUNTIME_ARCH}:${RUNTIME_TAG} as service
+FROM ${BB_DOCKER_NAMESPACE:-elbb}/bb-cplusplus-runtime${DEV:+-dev}/${RUNTIME_ARCH}:${RUNTIME_TAG} as service
 LABEL maintainer="elbb@conplement.de"
 LABEL description="This is an example runtime image with a hello world service on ${ARCH} architecture"
 LABEL vendor="conplement AG"
@@ -11,5 +11,5 @@ LABEL uri="https://github.com/elbb/bb-cplusplus"
 
 ARG RUNTIME_ARCH
 ARG DEV
-COPY ./gen/cplusplus-service/${RUNTIME_ARCH}/${DEV:+dev/}cplusplus_service /usr/local/bin/
+COPY ./gen/cplusplus-service${DEV:+-dev}/${RUNTIME_ARCH}/cplusplus_service /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/usr/local/bin/cplusplus_service"]

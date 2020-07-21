@@ -11,8 +11,9 @@ RUN apt-get update &&  \
     build-essential \
     crossbuild-essential-arm64 \
     cmake \
+    gosu \
     python3-pip \
-    gosu && \
+    && \
     apt-get clean
 RUN pip3 install setuptools wheel
 RUN pip3 install conan
