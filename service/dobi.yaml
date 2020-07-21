@@ -6,33 +6,191 @@ mount=mount-cplusplus-service-source:
   path: /source
   read-only: true
 
-mount=mount-cplusplus-service-build:
-  bind: build/cplusplus-service
+mount=mount-cplusplus-service-build-x86_64:
+  bind: build/cplusplus-service/x86_64
   path: /build
 
-mount=mount-cplusplus-service-install:
-  bind: gen/cplusplus-service
+mount=mount-cplusplus-service-build-dev-x86_64:
+  bind: build/cplusplus-service-dev/x86_64
+  path: /build
+
+mount=mount-cplusplus-service-install-x86_64:
+  bind: gen/cplusplus-service/x86_64
+  path: /install
+
+mount=mount-cplusplus-service-install-dev-x86_64:
+  bind: gen/cplusplus-service-dev/x86_64
+  path: /install
+
+mount=mount-cplusplus-service-build-aarch64:
+  bind: build/cplusplus-service/aarch64
+  path: /build
+
+mount=mount-cplusplus-service-build-dev-aarch64:
+  bind: build/cplusplus-service-dev/aarch64
+  path: /build
+
+mount=mount-cplusplus-service-install-aarch64:
+  bind: gen/cplusplus-service/aarch64
+  path: /install
+
+mount=mount-cplusplus-service-install-dev-aarch64:
+  bind: gen/cplusplus-service-dev/aarch64
   path: /install
 
 mount=mount-cplusplus-service-version:
   bind: gen/gitversion/cpp/elbb
-  path: /usr/local/include/elbb/
+  path: /usr/local/include/elbb
+
+# ===================================================
+# images
+# ===================================================
+image=image-cplusplus-service-x86_64:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service/x86_64"
+  depends:
+   - cplusplus-service-build-x86_64
+   - image-cplusplus-runtime-x86_64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "x86_64"
+    RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
+
+image=image-cplusplus-service-dev-x86_64:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-dev/x86_64"
+  depends:
+  depends:
+   - cplusplus-service-build-dev-x86_64
+   - image-cplusplus-runtime-dev-x86_64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "x86_64"
+    RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
+    DEV: "1"
+
+image=image-cplusplus-service-aarch64:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service/aarch64"
+  depends:
+   - cplusplus-service-build-aarch64
+   - image-cplusplus-runtime-aarch64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "aarch64"
+    RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
+
+image=image-cplusplus-service-dev-aarch64:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-dev/aarch64"
+  depends:
+   - cplusplus-service-build-dev-aarch64
+   - image-cplusplus-runtime-dev-aarch64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "aarch64"
+    RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
+    DEV: "1"
 
 # ===================================================
 # jobs
 # ===================================================
-job=cplusplus-service-build:
+job=cplusplus-service-build-x86_64:
   use: image-cplusplus-builder
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-build
-    - mount-cplusplus-service-install
+    - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-install-x86_64
     - mount-cplusplus-service-version
-  command: sh -c 'cd /build && cmake /source -DCMAKE_INSTALL_PREFIX=/install && make ${COMPONENT} && make install'
+  command: sh -c '
+    cd /build
+    && conan install /source --build missing
+    && cmake /source -DCMAKE_INSTALL_PREFIX=/install
+    && make ${COMPONENT}
+    && strip cplusplus_service
+    && make install'
   sources:
     - service
   artifact:
-    - gen/cplusplus-service
+    - gen/cplusplus-service/x86_64
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "COMPONENT={env.COMPONENT:all}"
+  annotations:
+    description: "-> build clpusplus-service"
+
+job=cplusplus-service-build-dev-x86_64:
+  use: image-cplusplus-builder
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-dev-x86_64
+    - mount-cplusplus-service-install-dev-x86_64
+    - mount-cplusplus-service-version
+  command: sh -c '
+    cd /build
+    && conan install /source --build missing
+    && cmake /source -DCMAKE_INSTALL_PREFIX=/install
+    && make ${COMPONENT}
+    && make install'
+  sources:
+    - service
+  artifact:
+    - gen/cplusplus-service-dev/x86_64
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "COMPONENT={env.COMPONENT:all}"
+  annotations:
+    description: "-> build clpusplus-service"
+
+job=cplusplus-service-build-aarch64:
+  use: image-cplusplus-builder
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-aarch64
+    - mount-cplusplus-service-install-aarch64
+    - mount-cplusplus-service-version
+  command: sh -c '
+    cd /build
+    && conan install /source --profile=/conan.armv8.profile --build missing
+    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install
+    && make ${COMPONENT}
+    && aarch64-linux-gnu-strip cplusplus_service
+    && make install'
+  sources:
+    - service
+  artifact:
+    - gen/cplusplus-service/aarch64
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "COMPONENT={env.COMPONENT:all}"
+  annotations:
+    description: "-> build clpusplus-service"
+
+job=cplusplus-service-build-dev-aarch64:
+  use: image-cplusplus-builder
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-dev-aarch64
+    - mount-cplusplus-service-install-dev-aarch64
+    - mount-cplusplus-service-version
+  command: sh -c '
+    cd /build
+    && conan install /source --profile=/conan.armv8.profile --build missing
+    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install
+    && make ${COMPONENT}
+    && make install'
+  sources:
+    - service
+  artifact:
+    - gen/cplusplus-service-dev/aarch64
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
@@ -42,3 +200,9 @@ job=cplusplus-service-build:
 # ===================================================
 # alias
 # ===================================================
+alias=cplusplus-service-build:
+  tasks:
+    - image-cplusplus-service-x86_64
+    - image-cplusplus-service-dev-x86_64
+    - image-cplusplus-service-aarch64
+    - image-cplusplus-service-dev-aarch64

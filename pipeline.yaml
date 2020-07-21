@@ -46,13 +46,35 @@ resources:
       password: ((registry_password))
       insecure_registries: ((bb_destination_insecure_registries))
 
-  - name: image-((bb_name))-runtime
+  - name: image-((bb_name))-runtime-x86_64
     type: docker-image
     source:
-      repository: ((bb_destination_runtime))
+      repository: ((bb_destination_runtime))/x86_64
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_destination_insecure_registries))
+  - name: image-((bb_name))-dev-runtime-x86_64
+    type: docker-image
+    source:
+      repository: ((bb_destination_dev_runtime))/x86_64
+      username: ((registry_user))
+      password: ((registry_password))
+      insecure_registries: ((bb_destination_insecure_registries))
+  - name: image-((bb_name))-runtime-aarch64
+    type: docker-image
+    source:
+      repository: ((bb_destination_runtime))/aarch64
+      username: ((registry_user))
+      password: ((registry_password))
+      insecure_registries: ((bb_destination_insecure_registries))
+  - name: image-((bb_name))-dev-runtime-aarch64
+    type: docker-image
+    source:
+      repository: ((bb_destination_dev_runtime))/aarch64
+      username: ((registry_user))
+      password: ((registry_password))
+      insecure_registries: ((bb_destination_insecure_registries))
+    
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -124,13 +146,41 @@ jobs:
               dockerfile: source/builder/Dockerfile
               latest: false
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-runtime
+          - put: image-((bb_name))-runtime-x86_64
             params:
               build: source/runtime
+              build_args:
+                ARCH: "amd64"
               dockerfile: source/runtime/Dockerfile
               latest: false
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
-
+          - put: image-((bb_name))-dev-runtime-x86_64
+            params:
+              build: source/runtime
+              build_args:
+                ARCH: "amd64"
+                DEV: "1"
+              dockerfile: source/runtime/Dockerfile
+              latest: false
+              tag_file: s3-gitversion/gitversion/plain/BranchVersion
+          - put: image-((bb_name))-runtime-aarch64
+            params:
+              build: source/runtime
+              build_args:
+                ARCH: "arm64v8"
+              dockerfile: source/runtime/Dockerfile
+              latest: false
+              tag_file: s3-gitversion/gitversion/plain/BranchVersion
+          - put: image-((bb_name))-dev-runtime-aarch64
+            params:
+              build: source/runtime
+              build_args:
+                ARCH: "arm64v8"
+                DEV: "1"
+              dockerfile: source/runtime/Dockerfile
+              latest: false
+              tag_file: s3-gitversion/gitversion/plain/BranchVersion
+    
   - name: Create latest tag for docker images for ((bb_name)) and push them
     public: true
     plan:
@@ -143,9 +193,34 @@ jobs:
             build: source-release/builder
             dockerfile: source-release/builder/Dockerfile
             latest: true
-        - put: image-((bb_name))-runtime
+        - put: image-((bb_name))-runtime-x86_64
           params:
             build: source-release/runtime
+            build_args:
+              ARCH: "amd64"
             dockerfile: source-release/runtime/Dockerfile
             latest: true
-            
+        - put: image-((bb_name))-dev-runtime-x86_64
+          params:
+            build: source-release/runtime
+            build_args:
+              ARCH: "amd64"
+              DEV: "1"
+            dockerfile: source-release/runtime/Dockerfile
+            latest: true
+        - put: image-((bb_name))-runtime-aarch64
+          params:
+            build: source-release/runtime
+            build_args:
+              ARCH: "arm64v8"
+            dockerfile: source-release/runtime/Dockerfile
+            latest: true
+        - put: image-((bb_name))-dev-runtime-aarch64
+          params:
+            build: source-release/runtime
+            build_args:
+              ARCH: "arm64v8"
+              DEV: "1"
+            dockerfile: source-release/runtime/Dockerfile
+            latest: true
+  
