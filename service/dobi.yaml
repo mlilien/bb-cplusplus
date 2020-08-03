@@ -209,7 +209,7 @@ job=cplusplus-service-build-dev-aarch64:
 
 job=cplusplus-service-analyze:
   use: image-codechecker
-  depends: [image-codechecker]
+  depends: [image-codechecker, image-cplusplus-service-x86_64]
   mounts:
     - mount-cplusplus-service-source
     - mount-cplusplus-service-build-x86_64
