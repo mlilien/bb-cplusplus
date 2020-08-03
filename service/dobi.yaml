@@ -66,6 +66,7 @@ job=cplusplus-service-analyze:
   artifact:
     - gen/cplusplus-service
   env:
+    - "LOCAL_USER_ID={user.uid}"
     - "PROJECT={project}"
   annotations:
     description: "-> analyze clpusplus-service"    
