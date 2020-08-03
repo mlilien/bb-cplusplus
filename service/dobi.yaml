@@ -209,11 +209,11 @@ job=cplusplus-service-build-dev-aarch64:
 
 job=cplusplus-service-analyze:
   use: image-codechecker
-  depends: [image-codechecker, cplusplus-service-build]
+  depends: [image-codechecker]
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-build
-    - mount-cplusplus-service-install
+    - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-install-x86_64
     - mount-cplusplus-service-version
   # Connect the container to the `dev environment` network
   net-mode: 'elbb-dev'
