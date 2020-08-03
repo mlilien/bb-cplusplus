@@ -123,7 +123,7 @@ job=cplusplus-service-build-x86_64:
   command: sh -c '
     cd /build
     && conan install /source --build missing
-    && cmake /source -DCMAKE_INSTALL_PREFIX=/install
+    && cmake /source -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Release
     && make ${COMPONENT}
     && strip cplusplus_service
     && make install'
@@ -172,7 +172,7 @@ job=cplusplus-service-build-aarch64:
   command: sh -c '
     cd /build
     && conan install /source --profile=/conan.armv8.profile --build missing
-    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install
+    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Release
     && make ${COMPONENT}
     && aarch64-linux-gnu-strip cplusplus_service
     && make install'
@@ -197,7 +197,7 @@ job=cplusplus-service-build-dev-aarch64:
   command: sh -c '
     cd /build
     && conan install /source --profile=/conan.armv8.profile --build missing
-    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Release
+    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Debug
     && make ${COMPONENT}
     && make install'
   sources:
