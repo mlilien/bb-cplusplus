@@ -12,5 +12,4 @@ export HOME=/home/user
 
 mkdir -p /build
 chown user:user /build
-
 exec gosu user "$@"
