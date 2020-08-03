@@ -134,6 +134,7 @@ job=cplusplus-service-build-x86_64:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
+    - "VERBOSE={env.VERBOSE}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -147,7 +148,7 @@ job=cplusplus-service-build-dev-x86_64:
   command: sh -c '
     cd /build
     && conan install /source --build missing
-    && cmake /source -DCMAKE_INSTALL_PREFIX=/install
+    && cmake /source -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Debug
     && make ${COMPONENT}
     && make install'
   sources:
@@ -157,6 +158,7 @@ job=cplusplus-service-build-dev-x86_64:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
+    - "VERBOSE={env.VERBOSE}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -181,6 +183,7 @@ job=cplusplus-service-build-aarch64:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
+    - "VERBOSE={env.VERBOSE}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -194,7 +197,7 @@ job=cplusplus-service-build-dev-aarch64:
   command: sh -c '
     cd /build
     && conan install /source --profile=/conan.armv8.profile --build missing
-    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install
+    && cmake /source -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++ -DCMAKE_INSTALL_PREFIX=/install -DCMAKE_BUILD_TYPE=Release
     && make ${COMPONENT}
     && make install'
   sources:
@@ -204,6 +207,7 @@ job=cplusplus-service-build-dev-aarch64:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
+    - "VERBOSE={env.VERBOSE}"
   annotations:
     description: "-> build clpusplus-service"
 
