@@ -2,7 +2,7 @@
 #-----------------------------    BUILD STAGE   ------------------------------#
 ###############################################################################
 
-FROM python:3.6-slim-stretch as builder
+FROM python:3.7-slim-buster as builder
 
 ARG CC_VERSION=release-v6.12.1
 ENV CC_VERSION ${CC_VERSION}
@@ -13,13 +13,12 @@ RUN set -x && apt-get update -qq \
     ca-certificates \
     curl \
     doxygen \
-    git \
     gcc-multilib \
-    curl \
+    git \
+    make \
     python-virtualenv \
     python3-dev \
-    python3-pip \
-    make
+    python3-pip
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x 
 SHELL ["/bin/bash", "-c"]
@@ -31,11 +30,9 @@ WORKDIR /codechecker
 RUN git checkout ${CC_VERSION}
 
 RUN pip3 install virtualenv
-RUN pip3 install npm
 
 # Create a Python virtualenv and set it as your environment.
-RUN make venv
-RUN source $PWD/venv/bin/activate
+RUN make venv && source $PWD/venv/bin/activate
 
 # Build CodeChecker
 RUN make -C /codechecker package
@@ -44,7 +41,7 @@ RUN make -C /codechecker package
 #--------------------------    PRODUCTION STAGE   ----------------------------#
 ###############################################################################
 
-FROM python:3.6-slim-stretch
+FROM python:3.7-slim-buster
 
 ARG CC_GID=950
 ARG CC_UID=950
@@ -62,11 +59,11 @@ RUN set -x && apt-get update -qq \
   && mkdir -p /usr/share/man/man7 \
   \
   && apt-get install -qqy --no-install-recommends ca-certificates \
-    postgresql-client \
     clang \
     clang-tidy \
     # To switch user and exec command.
-    gosu
+    gosu \
+    postgresql-client
 
 RUN if [ "$INSTALL_AUTH" = "yes" ] ; then \
       apt-get install -qqy --no-install-recommends \
@@ -88,9 +85,9 @@ COPY --from=builder /codechecker/web/requirements.txt /requirements_py
 
 # Install python requirements.
 RUN apt-get install -qqy --no-install-recommends \
-  python-dev \
   # gcc is needed to build psutil.
   gcc \
+  python-dev \
   \
   # Install necessary runtime environment files.
   && pip3 install -r /requirements_py/requirements.txt \

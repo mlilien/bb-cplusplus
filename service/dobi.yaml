@@ -25,7 +25,7 @@ mount=mount-cplusplus-service-version:
 image=image-codechecker:
   image: codechecker
   context: codechecker
-  tags: [latest]  
+  tags: ["{env.GitVersion_BranchVersion}"]  
 
 
 # ===================================================
@@ -66,8 +66,6 @@ job=cplusplus-service-analyze:
   artifact:
     - gen/cplusplus-service
   env:
-    - "LOCAL_USER_ID={user.uid}"
-    - "COMPONENT={env.COMPONENT:all}"
     - "PROJECT={project}"
   annotations:
     description: "-> analyze clpusplus-service"    

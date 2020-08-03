@@ -2,7 +2,7 @@
 
 # # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
-This building block offers a way to build,run and perform static code analysies any C++ project in a containerized manner and offers:
+This building block provides a way to build, run and perform static code analysis of any C++ project in a containerized manner and offers:
 
 -   C++ builder docker image
 -   C++ runtime docker image
@@ -37,17 +37,17 @@ By default three dobi resources are predefined (but not implemented):
 ./dobi.sh deploy # deploy the building block
 ```
 
-## Using dobi for static code analysies
+## Using dobi for static code analysis
 
-This building block offers the possibility to perform a static code analysis based on the Hello World example. The following tools and analyzers are used for the execution.
+This building block offers the possibility to perform a static code analysis. The following tools and analyzers are used for the execution.
 
 - CodeChecker
 - Clang- Tidy
-- Clang- Static Ananlyzer
+- Clang- Static Analyzer
 
 The results are automatically provided to a CodeChecker web server for analysis. It is recommended to use the dev environment (<https://github.com/elbb/elbb-dev-environment>) provided by elbb.
 
-**Notice:** Before start the code analysies, be sure that the CodeChecker Web Server is up and running.
+**Notice:** Before start the code analysis, be sure that the CodeChecker Web Server is up and running.
 
 With the following dobi command, the analysis of the sample code can be started:
 
