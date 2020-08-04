@@ -7,15 +7,6 @@ resources:
       branch: ((git_branch))
       skip_ssl_verification: ((git_skip_ssl_verification))
 
-  - name: source-release
-    type: git
-    source:
-      uri: ((git_source))
-      private_key: ((privatekey))
-      branch: ((git_release_branch))
-      skip_ssl_verification: ((git_skip_ssl_verification))
-      tag_filter: "*.*.*"
-
   - name: image-bb-gitversion-tool
     type: docker-image
     source:
@@ -41,40 +32,40 @@ resources:
   - name: image-((bb_name))-builder
     type: docker-image
     source:
-      repository: ((bb_destination_builder))
+      repository: ((bb_docker_namespace))/((bb_name))-builder
       username: ((registry_user))
       password: ((registry_password))
-      insecure_registries: ((bb_destination_insecure_registries))
+      insecure_registries: ((bb_insecure_registries))
 
   - name: image-((bb_name))-runtime-x86_64
     type: docker-image
     source:
-      repository: ((bb_destination_runtime))/x86_64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime/x86_64
       username: ((registry_user))
       password: ((registry_password))
-      insecure_registries: ((bb_destination_insecure_registries))
+      insecure_registries: ((bb_insecure_registries))
   - name: image-((bb_name))-dev-runtime-x86_64
     type: docker-image
     source:
-      repository: ((bb_destination_dev_runtime))/x86_64
+      repository: ((bb_docker_namespace))/((bb_name))-dev-runtime/x86_64
       username: ((registry_user))
       password: ((registry_password))
-      insecure_registries: ((bb_destination_insecure_registries))
+      insecure_registries: ((bb_insecure_registries))
   - name: image-((bb_name))-runtime-aarch64
     type: docker-image
     source:
-      repository: ((bb_destination_runtime))/aarch64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime/aarch64
       username: ((registry_user))
       password: ((registry_password))
-      insecure_registries: ((bb_destination_insecure_registries))
+      insecure_registries: ((bb_insecure_registries))
   - name: image-((bb_name))-dev-runtime-aarch64
     type: docker-image
     source:
-      repository: ((bb_destination_dev_runtime))/aarch64
+      repository: ((bb_docker_namespace))/((bb_name))-dev-runtime/aarch64
       username: ((registry_user))
       password: ((registry_password))
-      insecure_registries: ((bb_destination_insecure_registries))
-    
+      insecure_registries: ((bb_insecure_registries))
+
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -97,7 +88,7 @@ jobs:
             args:
               - -exc
               - |
-                entrypoint.sh && 
+                entrypoint.sh &&
                 jq empty gitversion/json/gitversion.json &&
                 cat gitversion/json/gitversion.json &&
                 tar cvfz gitversion/gitversion-$(cat gitversion/plain/BranchVersion).tar.gz gitversion/*
@@ -144,7 +135,7 @@ jobs:
             params:
               build: source/builder
               dockerfile: source/builder/Dockerfile
-              latest: false
+              tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
           - put: image-((bb_name))-runtime-x86_64
             params:
@@ -152,7 +143,7 @@ jobs:
               build_args:
                 ARCH: "amd64"
               dockerfile: source/runtime/Dockerfile
-              latest: false
+              tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
           - put: image-((bb_name))-dev-runtime-x86_64
             params:
@@ -161,7 +152,7 @@ jobs:
                 ARCH: "amd64"
                 DEV: "1"
               dockerfile: source/runtime/Dockerfile
-              latest: false
+              tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
           - put: image-((bb_name))-runtime-aarch64
             params:
@@ -169,7 +160,7 @@ jobs:
               build_args:
                 ARCH: "arm64v8"
               dockerfile: source/runtime/Dockerfile
-              latest: false
+              tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
           - put: image-((bb_name))-dev-runtime-aarch64
             params:
@@ -178,49 +169,5 @@ jobs:
                 ARCH: "arm64v8"
                 DEV: "1"
               dockerfile: source/runtime/Dockerfile
-              latest: false
+              tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
-    
-  - name: Create latest tag for docker images for ((bb_name)) and push them
-    public: true
-    plan:
-      - in_parallel:
-          - get: source-release
-            trigger: true
-      - in_parallel:
-        - put: image-((bb_name))-builder
-          params:
-            build: source-release/builder
-            dockerfile: source-release/builder/Dockerfile
-            latest: true
-        - put: image-((bb_name))-runtime-x86_64
-          params:
-            build: source-release/runtime
-            build_args:
-              ARCH: "amd64"
-            dockerfile: source-release/runtime/Dockerfile
-            latest: true
-        - put: image-((bb_name))-dev-runtime-x86_64
-          params:
-            build: source-release/runtime
-            build_args:
-              ARCH: "amd64"
-              DEV: "1"
-            dockerfile: source-release/runtime/Dockerfile
-            latest: true
-        - put: image-((bb_name))-runtime-aarch64
-          params:
-            build: source-release/runtime
-            build_args:
-              ARCH: "arm64v8"
-            dockerfile: source-release/runtime/Dockerfile
-            latest: true
-        - put: image-((bb_name))-dev-runtime-aarch64
-          params:
-            build: source-release/runtime
-            build_args:
-              ARCH: "arm64v8"
-              DEV: "1"
-            dockerfile: source-release/runtime/Dockerfile
-            latest: true
-  
