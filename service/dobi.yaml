@@ -7,35 +7,35 @@ mount=mount-cplusplus-service-source:
   read-only: true
 
 mount=mount-cplusplus-service-build-x86_64:
-  bind: build/cplusplus-service/x86_64
+  bind: build/cplusplus-service-x86_64
   path: /build
 
-mount=mount-cplusplus-service-build-dev-x86_64:
-  bind: build/cplusplus-service-dev/x86_64
+mount=mount-cplusplus-service-build-x86_64-dev:
+  bind: build/cplusplus-service-x86_64-dev
   path: /build
 
 mount=mount-cplusplus-service-install-x86_64:
-  bind: gen/cplusplus-service/x86_64
+  bind: gen/cplusplus-service-x86_64
   path: /install
 
-mount=mount-cplusplus-service-install-dev-x86_64:
-  bind: gen/cplusplus-service-dev/x86_64
+mount=mount-cplusplus-service-install-x86_64-dev:
+  bind: gen/cplusplus-service-x86_64-dev
   path: /install
 
 mount=mount-cplusplus-service-build-aarch64:
-  bind: build/cplusplus-service/aarch64
+  bind: build/cplusplus-service-aarch64
   path: /build
 
-mount=mount-cplusplus-service-build-dev-aarch64:
-  bind: build/cplusplus-service-dev/aarch64
+mount=mount-cplusplus-service-build-aarch64-dev:
+  bind: build/cplusplus-service-aarch64-dev
   path: /build
 
 mount=mount-cplusplus-service-install-aarch64:
-  bind: gen/cplusplus-service/aarch64
+  bind: gen/cplusplus-service-aarch64
   path: /install
 
-mount=mount-cplusplus-service-install-dev-aarch64:
-  bind: gen/cplusplus-service-dev/aarch64
+mount=mount-cplusplus-service-install-aarch64-dev:
+  bind: gen/cplusplus-service-aarch64-dev
   path: /install
 
 mount=mount-cplusplus-service-version:
@@ -46,7 +46,7 @@ mount=mount-cplusplus-service-version:
 # images
 # ===================================================
 image=image-cplusplus-service-x86_64:
-  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service/x86_64"
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-x86_64"
   depends:
    - cplusplus-service-build-x86_64
    - image-cplusplus-runtime-x86_64
@@ -58,12 +58,12 @@ image=image-cplusplus-service-x86_64:
     RUNTIME_ARCH: "x86_64"
     RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
 
-image=image-cplusplus-service-dev-x86_64:
-  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-dev/x86_64"
+image=image-cplusplus-service-x86_64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-x86_64-dev"
   depends:
   depends:
-   - cplusplus-service-build-dev-x86_64
-   - image-cplusplus-runtime-dev-x86_64
+   - cplusplus-service-build-x86_64-dev
+   - image-cplusplus-runtime-x86_64-dev
   context: .
   dockerfile: service/Dockerfile.dobi
   tags: ["{env.GitVersion_BranchVersion}"]
@@ -74,7 +74,7 @@ image=image-cplusplus-service-dev-x86_64:
     DEV: "1"
 
 image=image-cplusplus-service-aarch64:
-  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service/aarch64"
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-aarch64"
   depends:
    - cplusplus-service-build-aarch64
    - image-cplusplus-runtime-aarch64
@@ -86,11 +86,11 @@ image=image-cplusplus-service-aarch64:
     RUNTIME_ARCH: "aarch64"
     RUNTIME_TAG: "{env.GitVersion_BranchVersion}"
 
-image=image-cplusplus-service-dev-aarch64:
-  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-dev/aarch64"
+image=image-cplusplus-service-aarch64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-aarch64-dev"
   depends:
-   - cplusplus-service-build-dev-aarch64
-   - image-cplusplus-runtime-dev-aarch64
+   - cplusplus-service-build-aarch64-dev
+   - image-cplusplus-runtime-aarch64-dev
   context: .
   dockerfile: service/Dockerfile.dobi
   tags: ["{env.GitVersion_BranchVersion}"]
@@ -107,7 +107,7 @@ image=image-cplusplus-service-dev-aarch64:
 image=image-codechecker:
   image: codechecker
   context: codechecker
-  tags: ["{env.GitVersion_BranchVersion}"]  
+  tags: ["{env.GitVersion_BranchVersion}"]
 
 
 # ===================================================
@@ -130,7 +130,7 @@ job=cplusplus-service-build-x86_64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service/x86_64/cplusplus_service
+    - gen/cplusplus-service-x86_64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
@@ -138,12 +138,12 @@ job=cplusplus-service-build-x86_64:
   annotations:
     description: "-> build clpusplus-service"
 
-job=cplusplus-service-build-dev-x86_64:
+job=cplusplus-service-build-x86_64-dev:
   use: image-cplusplus-builder
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-build-dev-x86_64
-    - mount-cplusplus-service-install-dev-x86_64
+    - mount-cplusplus-service-build-x86_64-dev
+    - mount-cplusplus-service-install-x86_64-dev
     - mount-cplusplus-service-version
   command: sh -c '
     cd /build
@@ -154,7 +154,7 @@ job=cplusplus-service-build-dev-x86_64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service-dev/x86_64/cplusplus_service
+    - gen/cplusplus-service-x86_64-dev/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
@@ -179,7 +179,7 @@ job=cplusplus-service-build-aarch64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service/aarch64/cplusplus_service
+    - gen/cplusplus-service-aarch64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
@@ -187,12 +187,12 @@ job=cplusplus-service-build-aarch64:
   annotations:
     description: "-> build clpusplus-service"
 
-job=cplusplus-service-build-dev-aarch64:
+job=cplusplus-service-build-aarch64-dev:
   use: image-cplusplus-builder
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-build-dev-aarch64
-    - mount-cplusplus-service-install-dev-aarch64
+    - mount-cplusplus-service-build-aarch64-dev
+    - mount-cplusplus-service-install-aarch64-dev
     - mount-cplusplus-service-version
   command: sh -c '
     cd /build
@@ -203,7 +203,7 @@ job=cplusplus-service-build-dev-aarch64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service-dev/aarch64/cplusplus_service
+    - gen/cplusplus-service-aarch64-dev/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
@@ -232,7 +232,7 @@ job=cplusplus-service-analyze:
     - "PROJECT={project}"
     - "CODECHECKER_URL={env.CODECHECKER_URL:}"
   annotations:
-    description: "-> analyze clpusplus-service"    
+    description: "-> analyze clpusplus-service"
 
 # ===================================================
 # alias
@@ -240,6 +240,6 @@ job=cplusplus-service-analyze:
 alias=cplusplus-service-build:
   tasks:
     - image-cplusplus-service-x86_64
-    - image-cplusplus-service-dev-x86_64
+    - image-cplusplus-service-x86_64-dev
     - image-cplusplus-service-aarch64
-    - image-cplusplus-service-dev-aarch64
+    - image-cplusplus-service-aarch64-dev

@@ -40,28 +40,28 @@ resources:
   - name: image-((bb_name))-runtime-x86_64
     type: docker-image
     source:
-      repository: ((bb_docker_namespace))/((bb_name))-runtime/x86_64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime-x86_64
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
-  - name: image-((bb_name))-dev-runtime-x86_64
+  - name: image-((bb_name))-runtime-x86_64-dev
     type: docker-image
     source:
-      repository: ((bb_docker_namespace))/((bb_name))-dev-runtime/x86_64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime-x86_64-dev
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
   - name: image-((bb_name))-runtime-aarch64
     type: docker-image
     source:
-      repository: ((bb_docker_namespace))/((bb_name))-runtime/aarch64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime-aarch64
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
-  - name: image-((bb_name))-dev-runtime-aarch64
+  - name: image-((bb_name))-runtime-aarch64-dev
     type: docker-image
     source:
-      repository: ((bb_docker_namespace))/((bb_name))-dev-runtime/aarch64
+      repository: ((bb_docker_namespace))/((bb_name))-runtime-aarch64-dev
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
@@ -145,7 +145,7 @@ jobs:
               dockerfile: source/runtime/Dockerfile
               tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-dev-runtime-x86_64
+          - put: image-((bb_name))-runtime-x86_64-dev
             params:
               build: source/runtime
               build_args:
@@ -162,7 +162,7 @@ jobs:
               dockerfile: source/runtime/Dockerfile
               tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-dev-runtime-aarch64
+          - put: image-((bb_name))-runtime-aarch64-dev
             params:
               build: source/runtime
               build_args:
