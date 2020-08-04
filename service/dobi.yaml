@@ -217,8 +217,8 @@ job=cplusplus-service-analyze:
     - mount-cplusplus-service-version
   # Connect the container to the `dev environment` network
   net-mode: 'elbb-dev'
-  command: sh -c 'if [ -z "${CODECHECKER_IP_ADDRESS}" ]; then CODECHECKER_IP_ADDRESS="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_IP_ADDRESS}; cd /build && CodeChecker analyze compile_commands.json -o reports/ &&
-                               CodeChecker store reports/ --name "${PROJECT}" --url ${CODECHECKER_IP_ADDRESS}'
+  command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL}; cd /build && CodeChecker analyze compile_commands.json -o reports/ &&
+                               CodeChecker store reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}'
   sources:
     - service
   artifact:
@@ -226,7 +226,7 @@ job=cplusplus-service-analyze:
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "PROJECT={project}"
-    - "CODECHECKER_IP_ADDRESS={env.CODECHECKER_IP_ADDRESS:}"
+    - "CODECHECKER_URL={env.CODECHECKER_URL:}"
   annotations:
     description: "-> analyze clpusplus-service"    
 

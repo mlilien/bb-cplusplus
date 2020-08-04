@@ -55,10 +55,10 @@ With the following dobi command, the analysis of the sample code can be started:
 ./dobi.sh cplusplus-service-analyze
 ```
 
-If you don't use the elbb dev environment, you can change the default CodeChecker Web IP address of storing the analyze results with the following dobi command:
+If you don't use the elbb dev environment, you can change the default CodeChecker URL of storing the analyze results with the following dobi command:
 
 ```sh
-CODECHECKER_IP_ADDRESS=http://codechecker-web:8001/Default ./dobi.sh cplusplus-service-analyze
+CODECHECKER_URL=http://codechecker-web:8001/Default ./dobi.sh cplusplus-service-analyze
 ```
 
 ## Using concourse CI for a CI/CD build
