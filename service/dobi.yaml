@@ -101,6 +101,16 @@ image=image-cplusplus-service-dev-aarch64:
     DEV: "1"
 
 # ===================================================
+# images
+# ===================================================
+
+image=image-codechecker:
+  image: codechecker
+  context: codechecker
+  tags: ["{env.GitVersion_BranchVersion}"]  
+
+
+# ===================================================
 # jobs
 # ===================================================
 job=cplusplus-service-build-x86_64:
@@ -196,6 +206,29 @@ job=cplusplus-service-build-dev-aarch64:
     - "COMPONENT={env.COMPONENT:all}"
   annotations:
     description: "-> build clpusplus-service"
+
+job=cplusplus-service-analyze:
+  use: image-codechecker
+  depends: [image-codechecker, image-cplusplus-service-x86_64]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-install-x86_64
+    - mount-cplusplus-service-version
+  # Connect the container to the `dev environment` network
+  net-mode: 'elbb-dev'
+  command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL}; cd /build && CodeChecker analyze compile_commands.json -o reports/ &&
+                               CodeChecker store reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}'
+  sources:
+    - service
+  artifact:
+    - gen/cplusplus-service
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "PROJECT={project}"
+    - "CODECHECKER_URL={env.CODECHECKER_URL:}"
+  annotations:
+    description: "-> analyze clpusplus-service"    
 
 # ===================================================
 # alias
