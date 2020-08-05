@@ -24,10 +24,10 @@ else()
 endif()
 target_compile_options(cplusplus_service PRIVATE
   ${RELEASE_COMPILE_OPTIONS}
-  -Wall -Werror -ggdb -Wextra -fPIE -Wno-unused-parameter -Wformat=2 -Wformat-security -fstack-protector-all -Wstrict-overflow -fno-omit-frame-pointer -fno-common
+  -D_FORTIFY_SOURCE=2 -Wall -Werror -ggdb -Wextra -fPIE -Wno-unused-parameter -Wformat=2 -Wformat-security -fstack-protector-all -Wstrict-overflow -fno-omit-frame-pointer -fno-common
 )
 target_link_options(cplusplus_service PRIVATE
-  -ggdb -fno-omit-frame-pointer -pie "SHELL:-z noexecstack" "SHELL:-z noexecheap" "SHELL:-z relro " "SHELL:-z now " "SHELL:-z nodlopen"
+  -ggdb -fno-omit-frame-pointer -pie "SHELL:-z noexecstack" "SHELL:-z relro " "SHELL:-z now " "SHELL:-z nodlopen"
 )
 
 install(TARGETS cplusplus_service DESTINATION .)
