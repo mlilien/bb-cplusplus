@@ -130,11 +130,11 @@ job=cplusplus-service-build-x86_64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service/x86_64
+    - gen/cplusplus-service/x86_64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
-    - "VERBOSE={env.VERBOSE:0}"
+    - "VERBOSE={env.VERBOSE:}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -154,11 +154,11 @@ job=cplusplus-service-build-dev-x86_64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service-dev/x86_64
+    - gen/cplusplus-service-dev/x86_64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
-    - "VERBOSE={env.VERBOSE:0}"
+    - "VERBOSE={env.VERBOSE:}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -179,11 +179,11 @@ job=cplusplus-service-build-aarch64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service/aarch64
+    - gen/cplusplus-service/aarch64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
-    - "VERBOSE={env.VERBOSE:0}"
+    - "VERBOSE={env.VERBOSE:}"
   annotations:
     description: "-> build clpusplus-service"
 
@@ -203,11 +203,11 @@ job=cplusplus-service-build-dev-aarch64:
   sources:
     - service
   artifact:
-    - gen/cplusplus-service-dev/aarch64
+    - gen/cplusplus-service-dev/aarch64/cplusplus_service
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "COMPONENT={env.COMPONENT:all}"
-    - "VERBOSE={env.VERBOSE:0}"
+    - "VERBOSE={env.VERBOSE:}"
   annotations:
     description: "-> build clpusplus-service"
 
