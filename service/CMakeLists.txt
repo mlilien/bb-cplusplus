@@ -17,4 +17,17 @@ target_link_libraries(cplusplus_service
   pthread
 )
 
+IF(${CMAKE_BUILD_TYPE} MATCHES Debug)
+  set(RELEASE_COMPILE_OPTIONS -O0 -DDEBUG)
+else()
+  set(RELEASE_COMPILE_OPTIONS -Os -DNDEBUG)
+endif()
+target_compile_options(cplusplus_service PRIVATE
+  ${RELEASE_COMPILE_OPTIONS}
+  -D_FORTIFY_SOURCE=2 -Wall -Werror -ggdb -Wextra -fPIE -Wno-unused-parameter -Wformat=2 -Wformat-security -fstack-protector-all -Wstrict-overflow -fno-omit-frame-pointer -fno-common
+)
+target_link_options(cplusplus_service PRIVATE
+  -ggdb -fno-omit-frame-pointer -pie "SHELL:-z noexecstack" "SHELL:-z relro " "SHELL:-z now " "SHELL:-z nodlopen"
+)
+
 install(TARGETS cplusplus_service DESTINATION .)
