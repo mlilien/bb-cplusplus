@@ -16,5 +16,11 @@ target_include_directories(cplusplus_service PRIVATE
 target_link_libraries(cplusplus_service
   pthread
 )
-
 install(TARGETS cplusplus_service DESTINATION .)
+
+add_executable(cplusplus_service_unit_test unit_test/hello_world.cpp)
+target_include_directories(cplusplus_service_unit_test PRIVATE
+  /usr/local/include
+)
+install(TARGETS cplusplus_service_unit_test DESTINATION .)
+

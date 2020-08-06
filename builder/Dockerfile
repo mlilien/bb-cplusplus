@@ -5,6 +5,8 @@ LABEL description="This is a builder image for C++ components on x86_64 and armv
 LABEL vendor="conplement AG"
 LABEL uri="https://github.com/elbb/bb-cplusplus"
 
+
+
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends \
     apt-utils \
@@ -13,10 +15,15 @@ RUN apt-get update &&  \
     cmake \
     gosu \
     python3-pip \
+    wget \
     && \
     apt-get clean
 RUN pip3 install setuptools wheel
 RUN pip3 install conan
+
+# install doctest
+ENV DOCTEST_VERSION='2.4.0'
+RUN wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest/${DOCTEST_VERSION}/doctest/doctest.h -O //usr/local/include/doctest.h
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
