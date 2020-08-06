@@ -12,7 +12,8 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 add_executable(cplusplus_service src/main.cpp)
 target_include_directories(cplusplus_service PRIVATE
   ${CONAN_INCLUDE_DIRS_BOOST}
-  /source/include
+  ${CMAKE_SOURCE_DIR}/include
+  $ENV{BB_GITVERSION_INCLUDE_DIR}
 )
 target_link_libraries(cplusplus_service
   pthread
@@ -33,8 +34,8 @@ target_link_options(cplusplus_service PRIVATE
 # cplusplus_service_unit_test handling
 add_executable(cplusplus_service_unit_test unit_test/ut_main.cpp)
 target_include_directories(cplusplus_service_unit_test PRIVATE
-  /usr/local/include
-  /source/include
+   ${CMAKE_SOURCE_DIR}/include
+   $ENV{DOCTEST_INCLUDE_DIR}
 )
 
 install(TARGETS cplusplus_service cplusplus_service_unit_test DESTINATION .)

@@ -66,7 +66,9 @@ RUN pip3 install setuptools wheel \
 
 # install doctest
 ARG DOCTEST_VERSION='2.4.0'
-RUN wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest/${DOCTEST_VERSION}/doctest/doctest.h -O //usr/local/include/doctest.h
+ENV DOCTEST_INCLUDE_DIR='/usr/local/include'
+RUN wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest/${DOCTEST_VERSION}/doctest/doctest.h -O ${DOCTEST_INCLUDE_DIR}/doctest.h
+
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
