@@ -171,3 +171,68 @@ jobs:
               dockerfile: source/runtime/Dockerfile
               tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
+
+  - name: Build cplusplus_service
+    public: true
+    plan:
+      - in_parallel:
+          - get: image-((bb_name))-builder
+          - get: source
+          - get: s3-gitversion
+            passed: [Generate gitversion and put it on S3]
+            trigger: true
+            params:
+              unpack: true
+      - in_parallel:
+        - task: Build cplusplus_service x86_64
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source
+              - name: s3-gitversion
+            outputs:
+              - name: install
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  export CONAN_CPU_COUNT=$(nproc --all)
+                  mkdir build \
+                  && cd build \
+                  && conan install ../source/service --build missing \
+                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install/${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                  && make -j${CONAN_CPU_COUNT} install \
+                  && cd -
+                  ls -lR install
+            params:
+              BB_NAME: ((bb_name))
+              ARCH: x86_64
+              BUILD_TYPE: Release
+        - task: Build cplusplus_service aarch64
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source
+              - name: s3-gitversion
+            outputs:
+              - name: install
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  export CONAN_CPU_COUNT=$(nproc --all)
+                  mkdir build \
+                  && cd build \
+                  && conan install ../source/service --profile=/conan.armv8.profile  --build missing \
+                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install/${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++\
+                  && make -j${CONAN_CPU_COUNT} install \
+                  && cd -
+                  ls -lR install
+            params:
+              BB_NAME: ((bb_name))
+              ARCH: aarch64
+              BUILD_TYPE: Release
