@@ -32,3 +32,15 @@ alias=deploy:
     - bb-cplusplus-deploy
   annotations:
     description: "[alias] bb-cplusplus-deploy"
+
+alias=analyze:
+  tasks:
+    - bb-cplusplus-analyze
+  annotations:
+    description: "[alias] bb-cplusplus-analyze"
+
+alias=test:
+  tasks:
+    - bb-cplusplus-test
+  annotations:
+    description: "[alias] bb-cplusplus-test"

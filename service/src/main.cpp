@@ -6,6 +6,7 @@
 #include <boost/exception/diagnostic_information.hpp>
 
 #include <elbb/version.h>
+#include "hello_world.h"
 
 void asyncWaitForSignal(boost::asio::signal_set& signalSet, std::atomic<bool>& running)
 {
@@ -59,7 +60,8 @@ int main(int argc, char *argv[])
     //main app
     while (running)
     {
-        std::cout << "Hello world! Waiting to be terminated." << std::endl;
+        std::cout << HelloWorldReturn::ReturnHelloWorld() << std::endl;
+        std::cout << "Waiting to be terminated." << std::endl;
         std::cout << "FullSemVer: " << elbb::version::FullSemVer << std::endl;
         std::cout << "InformationalVersion: " << elbb::version::InformationalVersion
                   << std::endl;
