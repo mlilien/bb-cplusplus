@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -  updated ci pipeline tagging (reintegrated bb-buildingblock)
 -  added static code analyse environment(CodeChecker, clang-sa, clang-tidy)
 -  default compiler/linker settings for cplusplus_service
+-  added doctest and a unit test example
 
 ## [0.1.0] - 2020-06-08
 

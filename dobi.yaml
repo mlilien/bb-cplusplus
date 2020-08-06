@@ -22,3 +22,15 @@ alias=bb-cplusplus-deploy:
     - cplusplus-runtime-deploy
   annotations:
     description: "-> deploy all content"
+
+alias=bb-cplusplus-analyze:
+  tasks:
+    - cplusplus-service-analyze
+  annotations:
+    description: "-> analyze all content"
+
+alias=bb-cplusplus-test:
+  tasks:
+    - cplusplus-service-test
+  annotations:
+    description: "-> test all content"
