@@ -2,12 +2,13 @@
 
 # # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
-This building block provides a way to build, run and perform static code analysis of any C++ project in a containerized manner and offers:
+This building block provides a way to build, run, test and perform static code analysis of any C++ project in a containerized manner and offers:
 
 -   C++ builder docker image
 -   C++ runtime docker image
 -   local and CI/CD build system
 -   C++ Static Code Analyzer
+-   C++ Unit Test with doctest
 
 There is also an example that shows the usage with a 'hello world' application.
 
@@ -29,12 +30,14 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
-By default three dobi resources are predefined (but not implemented):
+By default five dobi resources are predefined:
 
 ```sh
-./dobi.sh build  # build the building block
-./dobi.sh test   # run all tests
-./dobi.sh deploy # deploy the building block
+./dobi.sh build    # build the building block
+./dobi.sh test     # run all tests
+./dobi.sh analyze  # perform static code analyze of the building block
+./dobi.sh version  # generate version informations
+./dobi.sh deploy   # deploy the building block
 ```
 
 ## Using dobi for static code analysis
@@ -52,13 +55,26 @@ The results are automatically provided to a CodeChecker web server for analysis.
 With the following dobi command, the analysis of the sample code can be started:
 
 ```sh
-./dobi.sh cplusplus-service-analyze
+./dobi.sh analyze
 ```
 
 If you don't use the elbb dev environment, you can change the default CodeChecker URL of storing the analyze results with the following dobi command:
 
 ```sh
-CODECHECKER_URL=http://codechecker-web:8001/Default ./dobi.sh cplusplus-service-analyze
+CODECHECKER_URL=http://codechecker-web:8001/Default 
+./dobi.sh analyze
+```
+
+## Using dobi for unit test
+
+This building block offers the possibility to perform a unit test of your source code. The following tool is used for the execution.
+
+<https://github.com/onqtam/doctest>
+
+With the following dobi command, a example unit test of a sample code can be started:
+
+```sh
+./dobi.sh test
 ```
 
 ## Using concourse CI for a CI/CD build
