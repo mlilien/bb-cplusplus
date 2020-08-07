@@ -193,7 +193,8 @@ jobs:
               - name: source
               - name: s3-gitversion
             outputs:
-              - name: install
+              - name: install-((bb_name))-x86_64
+              - name: analyze
             run:
               path: /bin/bash
               args:
@@ -203,10 +204,9 @@ jobs:
                   mkdir build \
                   && cd build \
                   && conan install ../source/service --build missing \
-                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install/${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install-${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
                   && make -j${CONAN_CPU_COUNT} install \
-                  && cd -
-                  ls -lR install
+                  && cp
             params:
               BB_NAME: ((bb_name))
               ARCH: x86_64
@@ -219,7 +219,7 @@ jobs:
               - name: source
               - name: s3-gitversion
             outputs:
-              - name: install
+              - name: install-((bb_name))-aarch64
             run:
               path: /bin/bash
               args:
@@ -229,11 +229,26 @@ jobs:
                   mkdir build \
                   && cd build \
                   && conan install ../source/service --profile=/conan.armv8.profile  --build missing \
-                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install/${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++\
-                  && make -j${CONAN_CPU_COUNT} install \
-                  && cd -
-                  ls -lR install
+                  && cmake ../source/service -DCMAKE_INSTALL_PREFIX=../install-${BB_NAME}-${ARCH} -DCMAKE_CXX_FLAGS=-I\ ../s3-gitversion/gitversion/cpp -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=/usr/bin/aarch64-linux-gnu-g++\
+                  && make -j${CONAN_CPU_COUNT} install
             params:
               BB_NAME: ((bb_name))
               ARCH: aarch64
               BUILD_TYPE: Release
+      - task: analyze
+        image: image-((bb_name))-builder
+        config:
+          platform: linux
+          inputs:
+            - name: analyze
+          run:
+            path: /bin/bash
+            args:
+              - -exc
+              - |
+                cd analyze \
+                && CodeChecker analyze compile_commands.json -o reports/ \
+                && CodeChecker store reports/ --name "${BB_NAME}" --url ${CODECHECKER_URL}
+            params:
+              BB_NAME: ((bb_name))
+              CODECHECKER_URL: ((codechecker_url))
