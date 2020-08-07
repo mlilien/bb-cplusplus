@@ -177,6 +177,7 @@ jobs:
     plan:
       - in_parallel:
           - get: image-((bb_name))-builder
+            passed: [Create docker images for ((bb_name)) and push them]
           - get: source
           - get: s3-gitversion
             passed: [Generate gitversion and put it on S3]
