@@ -215,15 +215,20 @@ job=cplusplus-service-analyze-x86_64:
   mounts:
     - mount-cplusplus-service-source
     - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-install-x86_64
     - mount-cplusplus-service-version
   # Connect the container to the `dev environment` network
   net-mode: 'elbb-dev'
-  command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL}; cd /build && CodeChecker analyze compile_commands.json -o reports/ &&
-                               CodeChecker store reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}'
+  command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL};
+            cd /build
+            mount
+            && CodeChecker analyze compile_commands.json -o /install/reports/
+            && CodeChecker store reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}
+            && touch /install/reports/codechecker.success'
   sources:
     - service
   artifact:
-    - gen/cplusplus-service
+    - gen/cplusplus-service-x86_64/reports/codechecker.success
   env:
     - "LOCAL_USER_ID={user.uid}"
     - "PROJECT={project}"
