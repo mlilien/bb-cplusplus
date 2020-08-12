@@ -12,6 +12,15 @@ if [ -z ${1} ]; then
     exit 1
 fi
 
+# load and export env files
+set -o allexport
+[[ -f local.env ]] && source local.env
+set +o allexport
+
+set +o errexit
+[[ ! -z ${NETWORK} ]] && docker network create ${NETWORK} &>/dev/null
+set -o errexit
+
 # load generated version infos
 source gen/gitversion/env/gitversion.env
 

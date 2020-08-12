@@ -73,7 +73,7 @@ RUN wget --no-check-certificate https://raw.githubusercontent.com/onqtam/doctest
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-COPY conan.armv8.profile .
+COPY conan.*.profile ./
 
 ENV PATH="/codechecker/bin:$PATH"
 ENV BUILD_DIR=${BUILD_DIR:-/build}
