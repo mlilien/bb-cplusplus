@@ -2,13 +2,14 @@
 
 # # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
-This building block provides a way to build, run, test and perform static code analysis of any C++ project in a containerized manner and offers:
+This building block provides a way to build, run, test, perform static code analysis and generate documentation of any C++ project in a containerized manner and offers:
 
 -   C++ builder docker image
 -   C++ runtime docker image
 -   local and CI/CD build system
 -   C++ Static Code Analyzer
 -   C++ Unit Test with doctest
+-   generation of documentation with doxygen
 
 There is also an example that shows the usage with a 'hello world' application.
 
@@ -31,7 +32,7 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
-By default five dobi resources are predefined:
+By default six dobi resources are predefined:
 
 ```sh
 ./dobi.sh build    # build the building block
@@ -39,6 +40,7 @@ By default five dobi resources are predefined:
 ./dobi.sh analyze  # perform static code analyze of the building block
 ./dobi.sh version  # generate version informations
 ./dobi.sh deploy   # deploy the building block
+./dobi.sh doc      # generate documentation
 ```
 
 ## Using dobi for build
@@ -98,6 +100,20 @@ With the following dobi command, a example unit test of a sample code can be sta
 ```sh
 ./dobi.sh test
 ```
+
+## Using dobi for doxygen documentation
+
+This building block offers the possibility to generate documentation of your source code. The following tool is used for the execution.
+
+<https://www.doxygen.nl/index.html>
+
+With the following dobi command, the generation of the documentation of the sample code can be started:
+
+```sh
+./dobi.sh doc
+```
+
+Results can be found in subfolder: gen/cplusplus-service-x86_64
 
 ## Using concourse CI for a CI/CD build
 

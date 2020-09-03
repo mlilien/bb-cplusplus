@@ -44,3 +44,9 @@ alias=test:
     - bb-cplusplus-test
   annotations:
     description: "[alias] bb-cplusplus-test"
+
+alias=doc:
+  tasks:
+    - bb-cplusplus-doc
+  annotations:
+    description: "[alias] bb-cplusplus-doc"
