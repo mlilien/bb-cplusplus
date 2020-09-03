@@ -268,10 +268,9 @@ job=cplusplus-service-doxygen-x86_64:
   mounts:
     - mount-cplusplus-service-source
     - mount-cplusplus-service-install-x86_64
-  command: /bin/bash
+  command: sh -c 'cd /install && doxygen /source/doxygen/Doxyfile'
   sources:
     - service
-  interactive: true
   env:
     - "LOCAL_USER_ID={user.uid}"
   annotations:
@@ -294,3 +293,7 @@ alias=cplusplus-service-analyze:
 alias=cplusplus-service-test:
   tasks:
     - cplusplus-service-unit-test-run-x86_64
+
+alias=cplusplus-service-doc:
+  tasks:
+    - cplusplus-service-doxygen-x86_64
