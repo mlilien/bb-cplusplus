@@ -15,7 +15,7 @@ There is also an example that shows the usage with a 'hello world' application.
 # Build
 
 It is highly recommended to modify this building block for your needs. For the integration
-into your project you should modify the builder and runtime Dockerfiles. 
+into your project you should modify the builder and runtime Dockerfiles.
 
 The images can be created locally manually or e.g. via dobi (<https://github.com/dnephin/dobi>) or via concourse CI.
 
@@ -25,6 +25,7 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 -   dobi (<https://github.com/dnephin/dobi>)
 -   docker (<https://docs.docker.com/install/>)
+-   (optional ) JFrog Artifactory Community Edition for C/C++ (<https://bintray.com/jfrog/product/JFrog-Artifactory-Cpp-CE/view>) (also available in dev environment <https://github.com/elbb/elbb-dev-environment>)
 
 ### Using dobi
 
@@ -39,6 +40,19 @@ By default five dobi resources are predefined:
 ./dobi.sh version  # generate version informations
 ./dobi.sh deploy   # deploy the building block
 ```
+
+## Using dobi for build
+
+The alias `build` in this building block calls all dobi c++ build jobs. These c++ build jobs use conan to cross compile artifacts. Conan builds necessary dependent artifacts. By default these build jobs use a docker container connected to the `elbb-dev` docker network running the builder image. These build jobs try to upload dependent artifacts to a conan artifactory in this docker network. E.g. you can use the dev environment (<https://github.com/elbb/elbb-dev-environment>) to use a local conan artifactory. This is an optional feature though, the build job will not fail if uploading fails.
+
+You can configure it via the following environment variables:
+
+```sh
+NETWORK=yourDockerNetwork CONAN_REMOTE=yourConanArtifactoryURL CONAN_LOGIN_USERNAME=yourUsername CONAN_PASSWORD=yourPassword CONAN_SSL_VERIFICATION=false ./dobi.sh build
+```
+
+A more convenient way is to set these environment variables in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
+
 
 ## Using dobi for static code analysis
 
@@ -61,9 +75,19 @@ With the following dobi command, the analysis of the sample code can be started:
 If you don't use the elbb dev environment, you can change the default CodeChecker URL of storing the analyze results with the following dobi command:
 
 ```sh
-CODECHECKER_URL=http://codechecker-web:8001/Default 
+CODECHECKER_URL=http://codechecker-web:8001/Default
 ./dobi.sh analyze
 ```
+
+By default the `analyze` job is started in a docker container connected to `elbb-dev` docker network used in the dev environment (<https://github.com/elbb/elbb-dev-environment>). If you use an own codechecker instance in another docker network, you have to adapt it via:
+
+```sh
+CODECHECKER_URL=http://codechecker-web:8001/Default NETWORK=yourDockerNetwork
+./dobi.sh analyze
+```
+
+A more convenient way is to set this environment variable in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
+
 
 ## Using dobi for unit test
 
@@ -79,8 +103,8 @@ With the following dobi command, a example unit test of a sample code can be sta
 
 ## Using concourse CI for a CI/CD build
 
-The pipeline file must be uploaded to concourse CI via `fly`. 
-Enter the build users ssh private key into the file `ci/credentials.template.yaml` and rename it to `ci/credentials.yaml`. 
+The pipeline file must be uploaded to concourse CI via `fly`.
+Enter the build users ssh private key into the file `ci/credentials.template.yaml` and rename it to `ci/credentials.yaml`.
 
 **Note: `credentials.yaml` is ignored by `.gitignore` and will not be checked in.**
 
