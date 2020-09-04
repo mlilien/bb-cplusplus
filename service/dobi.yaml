@@ -279,6 +279,23 @@ job=cplusplus-service-doxygen-x86_64:
   annotations:
     description: "-> run cplusplus-service doxygen"
 
+job=test-hello-world:
+  use: image-cplusplus-runtime-x86_64-dev
+  depends:
+    - cplusplus-service-build-x86_64-dev
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-install-x86_64-dev
+  # command: sh -c '/install/cplusplus_service'
+  # command: /bin/bash
+  interactive: true
+  # entrypoint: sh -c "/usr/local/bin/entrypoint.sh /install/cplusplus_service"
+  entrypoint: sh -c "gdb /install/cplusplus_service"
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+  annotations:
+    description: "-> run hello-world"
+
 # ===================================================
 # alias
 # ===================================================
