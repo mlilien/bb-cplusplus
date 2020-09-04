@@ -171,3 +171,121 @@ jobs:
               dockerfile: source/runtime/Dockerfile
               tag_as_latest: ((bb_release_as_latest))
               tag_file: s3-gitversion/gitversion/plain/BranchVersion
+
+  - name: Build cplusplus_service
+    public: true
+    plan:
+      - in_parallel:
+          - get: image-((bb_name))-builder
+            passed: [Create docker images for ((bb_name)) and push them]
+            trigger: true
+          - get: image-((bb_name))-runtime-x86_64
+            passed: [Create docker images for ((bb_name)) and push them]
+            trigger: true
+          - get: source
+          - get: s3-gitversion
+            passed: [Generate gitversion and put it on S3]
+            trigger: true
+            params:
+              unpack: true
+      - in_parallel:
+        - task: Build cplusplus_service x86_64
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source
+              - name: s3-gitversion
+            outputs:
+              - name: install-((bb_name))-x86_64
+              - name: analyze
+              - name: build
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  chmod a+w . && chmod a+w analyze && chmod a+w build && chmod a+w ${INSTALL_DIR};
+                  /usr/local/bin/entrypoint.sh source/service/service.build.sh \
+                  && cp ${BUILD_DIR}/compile_commands.json ./analyze/
+            params:
+              ARCH: "x86_64"
+              BB_GITVERSION_INCLUDE_DIR: "s3-gitversion/gitversion/cpp"
+              BUILD_DIR: "build"
+              CMAKE_BUILD_TYPE: "Release"
+              CONAN_LOGIN_USERNAME: "((conan_user))"
+              CONAN_PASSWORD: "((conan_password))"
+              CONAN_REMOTE: "((conan_remote))"
+              CONAN_USER_HOME: "build"
+              CONAN_SSL_VERIFICATION: "((conan_ssl_verification))"
+              INSTALL_DIR: "install-((bb_name))-x86_64"
+              SOURCE_DIR: "source/service"
+
+        - task: Build cplusplus_service aarch64
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source
+              - name: s3-gitversion
+            outputs:
+              - name: install-((bb_name))-aarch64
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  chmod a+w . && chmod a+w ${INSTALL_DIR};
+                  /usr/local/bin/entrypoint.sh source/service/service.build.sh
+            params:
+              ARCH: "aarch64"
+              BB_GITVERSION_INCLUDE_DIR: "s3-gitversion/gitversion/cpp"
+              BUILD_DIR: "build"
+              CMAKE_BUILD_TYPE: "Release"
+              CONAN_LOGIN_USERNAME: "((conan_user))"
+              CONAN_PASSWORD: "((conan_password))"
+              CONAN_REMOTE: "((conan_remote))"
+              CONAN_USER_HOME: "build"
+              CONAN_SSL_VERIFICATION: "((conan_ssl_verification))"
+              INSTALL_DIR: "install-((bb_name))-aarch64"
+              SOURCE_DIR: "source/service"
+
+      - in_parallel:
+        - task: unittest
+          image: image-((bb_name))-runtime-x86_64
+          config:
+            platform: linux
+            inputs:
+              - name: install-((bb_name))-x86_64
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  env;
+                  cd install-${BB_NAME}-x86_64 \
+                  && ./cplusplus_service_unit_test
+            params:
+              BB_NAME: "((bb_name))"
+
+        - task: analyze
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: analyze
+              - name: build
+              - name: source
+              - name: s3-gitversion
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  sed -i "s@/tmp/build/[^/]*/@$(pwd)/@g" analyze/compile_commands.json
+                  cd analyze \
+                  && CodeChecker analyze compile_commands.json -o reports/ \
+                  && CodeChecker store reports/ --name "${BB_NAME}" --url ${CODECHECKER_URL}
+            params:
+              BB_NAME: ((bb_name))
+              CODECHECKER_URL: ((codechecker_url))
