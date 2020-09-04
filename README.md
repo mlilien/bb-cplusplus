@@ -39,7 +39,7 @@ By default six dobi resources are predefined:
 ./dobi.sh analyze  # perform static code analyze of the building block
 ./dobi.sh version  # generate version informations
 ./dobi.sh deploy   # deploy the building block
-./dobi.sh doc      # generate documentation
+./dobi.sh doxygen  # generate documentation with doxygen
 ```
 
 ## Using dobi for static code analysis
@@ -87,10 +87,10 @@ This building block offers the possibility to generate documentation of your sou
 With the following dobi command, the generation of the documentation of the sample code can be started:
 
 ```sh
-./dobi.sh doc
+./dobi.sh doxygen
 ```
 
-Results can be found in subfolder: gen/cplusplus-service-x86_64
+Results can be found in subfolder: gen/cplusplus-service-x86_64/doxygen
 
 ## Using concourse CI for a CI/CD build
 

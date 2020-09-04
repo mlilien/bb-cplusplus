@@ -294,6 +294,6 @@ alias=cplusplus-service-test:
   tasks:
     - cplusplus-service-unit-test-run-x86_64
 
-alias=cplusplus-service-doc:
+alias=cplusplus-service-doxygen:
   tasks:
     - cplusplus-service-doxygen-x86_64
