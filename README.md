@@ -25,7 +25,7 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 -   dobi (<https://github.com/dnephin/dobi>)
 -   docker (<https://docs.docker.com/install/>)
--   (optional ) JFrog Artifactory Community Edition for C/C++ (<https://bintray.com/jfrog/product/JFrog-Artifactory-Cpp-CE/view>) (also available in dev environment <https://github.com/elbb/elbb-dev-environment>)
+-   JFrog Artifactory Community Edition for C/C++ (<https://bintray.com/jfrog/product/JFrog-Artifactory-Cpp-CE/view>) (also available in dev environment <https://github.com/elbb/elbb-dev-environment>) (optional for dobi, mandatory for usage of the concourse ci/cd pipeline)
 
 ### Using dobi
 
@@ -45,7 +45,7 @@ By default five dobi resources are predefined:
 
 The alias `build` in this building block calls all dobi c++ build jobs. These c++ build jobs use conan to cross compile artifacts. Conan builds necessary dependent artifacts. By default these build jobs use a docker container connected to the `elbb-dev` docker network running the builder image. These build jobs try to upload dependent artifacts to a conan artifactory in this docker network. E.g. you can use the dev environment (<https://github.com/elbb/elbb-dev-environment>) to use a local conan artifactory. This is an optional feature though, the build job will not fail if uploading fails.
 
-You can configure it via the following environment variables:
+If you want to use the optional conan artifactory, you can configure it via the following environment variables:
 
 ```sh
 NETWORK=yourDockerNetwork CONAN_REMOTE=yourConanArtifactoryURL CONAN_LOGIN_USERNAME=yourUsername CONAN_PASSWORD=yourPassword CONAN_SSL_VERIFICATION=false ./dobi.sh build
@@ -75,15 +75,13 @@ With the following dobi command, the analysis of the sample code can be started:
 If you don't use the elbb dev environment, you can change the default CodeChecker URL of storing the analyze results with the following dobi command:
 
 ```sh
-CODECHECKER_URL=http://codechecker-web:8001/Default
-./dobi.sh analyze
+CODECHECKER_URL=http://codechecker-web:8001/Default ./dobi.sh analyze
 ```
 
 By default the `analyze` job is started in a docker container connected to `elbb-dev` docker network used in the dev environment (<https://github.com/elbb/elbb-dev-environment>). If you use an own codechecker instance in another docker network, you have to adapt it via:
 
 ```sh
-CODECHECKER_URL=http://codechecker-web:8001/Default NETWORK=yourDockerNetwork
-./dobi.sh analyze
+CODECHECKER_URL=http://codechecker-web:8001/Default NETWORK=yourDockerNetwork ./dobi.sh analyze
 ```
 
 A more convenient way is to set this environment variable in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.

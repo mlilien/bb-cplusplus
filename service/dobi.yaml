@@ -235,7 +235,6 @@ job=cplusplus-service-analyze-x86_64:
   net-mode: '{env.NETWORK:}'
   command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL};
             cd /build
-            mount
             && CodeChecker analyze compile_commands.json -o /install/reports/
             && CodeChecker store /install/reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}
             && touch /install/reports/codechecker.success'
