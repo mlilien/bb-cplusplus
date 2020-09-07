@@ -44,3 +44,9 @@ alias=test:
     - bb-cplusplus-test
   annotations:
     description: "[alias] bb-cplusplus-test"
+
+alias=doxygen:
+  tasks:
+    - bb-cplusplus-doxygen
+  annotations:
+    description: "[alias] bb-cplusplus-doxygen"

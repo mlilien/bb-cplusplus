@@ -34,3 +34,9 @@ alias=bb-cplusplus-test:
     - cplusplus-service-test
   annotations:
     description: "-> test all content"
+
+alias=bb-cplusplus-doxygen:
+  tasks:
+    - cplusplus-service-doxygen
+  annotations:
+    description: "-> generate documentation with doxygen"    

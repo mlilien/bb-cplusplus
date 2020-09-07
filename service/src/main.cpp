@@ -1,3 +1,23 @@
+/**
+@file
+
+    Main application file.
+
+    Contains the main routine.
+
+    @author Conplement AG
+*/
+
+/**
+@page sec_intro Intro
+*/
+
+/**
+@page sec_intro
+
+Example for chapter
+*/
+
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -7,7 +27,9 @@
 
 #include <elbb/version.h>
 #include "hello_world.h"
-
+/**
+    asyncWaitForSignal function
+ */
 void asyncWaitForSignal(boost::asio::signal_set& signalSet, std::atomic<bool>& running)
 {
     try
@@ -32,7 +54,9 @@ void asyncWaitForSignal(boost::asio::signal_set& signalSet, std::atomic<bool>& r
         throw;
     }
 }
-
+/**
+    Main function
+ */
 int main(int argc, char *argv[])
 {
     //register signal handler
