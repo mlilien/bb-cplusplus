@@ -266,8 +266,8 @@ job=cplusplus-service-doxygen-x86_64:
   depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-install-x86_64
-  command: sh -c 'cd /install && doxygen /source/doxygen/Doxyfile'
+    - mount-cplusplus-service-build-x86_64
+  command: sh -c 'cd /source/doxygen; doxygen Doxyfile'
   sources:
     - service
   env:
