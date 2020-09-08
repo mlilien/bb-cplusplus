@@ -289,3 +289,18 @@ jobs:
             params:
               BB_NAME: ((bb_name))
               CODECHECKER_URL: ((codechecker_url))
+
+        - task: doxygen
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source         
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  mkdir source/build; \
+                  cd source/service/doxygen; \
+                  doxygen Doxyfile;
