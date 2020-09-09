@@ -119,7 +119,7 @@ Results can be found in subfolder: gen/doxygen
 
 This building block provides a doxygen configuration file `service/Doxyfile`. Use this file to configure doxygen for your use.
 
-For further information to configure doxygen see:
+For further information how to configure doxygen, see:
 
 <https://www.doxygen.nl/manual/config.html>
 
