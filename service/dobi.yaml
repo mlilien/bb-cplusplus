@@ -46,6 +46,10 @@ mount=mount-cplusplus-service-version:
   bind: gen/gitversion/cpp/elbb
   path: /usr/local/include/elbb
 
+mount=mount-cplusplus-service-doxygen:
+  bind: gen/
+  path: /build 
+
 # ===================================================
 # images
 # ===================================================
@@ -266,8 +270,8 @@ job=cplusplus-service-doxygen-x86_64:
   depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
   mounts:
     - mount-cplusplus-service-source
-    - mount-cplusplus-service-install-x86_64
-  command: sh -c 'cd /install && doxygen /source/doxygen/Doxyfile'
+    - mount-cplusplus-service-doxygen
+  command: sh -c 'cd /source/doxygen; doxygen Doxyfile'
   sources:
     - service
   env:

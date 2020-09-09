@@ -113,7 +113,15 @@ With the following dobi command, the generation of the documentation of the samp
 ./dobi.sh doxygen
 ```
 
-Results can be found in subfolder: gen/cplusplus-service-x86_64/doxygen
+Results can be found in subfolder: gen/doxygen
+
+### doxygen configuration
+
+This building block provides a doxygen configuration file `service/Doxyfile`. Use this file to configure doxygen for your use.
+
+For further information how to configure doxygen, see:
+
+<https://www.doxygen.nl/manual/config.html>
 
 ## Using concourse CI for a CI/CD build
 
