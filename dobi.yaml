@@ -40,3 +40,9 @@ alias=bb-cplusplus-doxygen:
     - cplusplus-service-doxygen
   annotations:
     description: "-> generate documentation with doxygen"    
+
+alias=bb-cplusplus-debug:
+  tasks:
+    - cplusplus-service-debug
+  annotations:
+    description: "-> start gdbserver for debugging" 

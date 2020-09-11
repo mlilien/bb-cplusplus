@@ -2,7 +2,7 @@
 
 # # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
-This building block provides a way to build, run, test, perform static code analysis and generate documentation of any C++ project in a containerized manner and offers:
+This building block provides a way to build, run, debug, test, perform static code analysis and generate documentation of any C++ project in a containerized manner and offers:
 
 -   C++ builder docker image
 -   C++ runtime docker image
@@ -10,6 +10,7 @@ This building block provides a way to build, run, test, perform static code anal
 -   C++ Static Code Analyzer
 -   C++ Unit Test with doctest
 -   generation of documentation with doxygen
+-   debugging hello world service with gdbserver
 
 There is also an example that shows the usage with a 'hello world' application.
 
@@ -32,7 +33,7 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
-By default six dobi resources are predefined:
+By default seven dobi resources are predefined:
 
 ```sh
 ./dobi.sh build    # build the building block
@@ -41,9 +42,10 @@ By default six dobi resources are predefined:
 ./dobi.sh version  # generate version informations
 ./dobi.sh deploy   # deploy the building block
 ./dobi.sh doxygen  # generate documentation with doxygen
+./dobi.sh debug    # start gdbserver for debugging
 ```
 
-## Using dobi for build
+#### Using dobi for build
 
 The alias `build` in this building block calls all dobi c++ build jobs. These c++ build jobs use conan to cross compile artifacts. Conan builds necessary dependent artifacts. By default these build jobs use a docker container connected to the `elbb-dev` docker network running the builder image. These build jobs try to upload dependent artifacts to a conan artifactory in this docker network. E.g. you can use the dev environment (<https://github.com/elbb/elbb-dev-environment>) to use a local conan artifactory. This is an optional feature though, the build job will not fail if uploading fails.
 
@@ -56,7 +58,7 @@ NETWORK=yourDockerNetwork CONAN_REMOTE=yourConanArtifactoryURL CONAN_LOGIN_USERN
 A more convenient way is to set these environment variables in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
 
 
-## Using dobi for static code analysis
+#### Using dobi for static code analysis
 
 This building block offers the possibility to perform a static code analysis. The following tools and analyzers are used for the execution.
 
@@ -89,7 +91,7 @@ CODECHECKER_URL=http://codechecker-web:8001/Default NETWORK=yourDockerNetwork ./
 A more convenient way is to set this environment variable in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
 
 
-## Using dobi for unit test
+#### Using dobi for unit test
 
 This building block offers the possibility to perform a unit test of your source code. The following tool is used for the execution.
 
@@ -101,7 +103,7 @@ With the following dobi command, a example unit test of a sample code can be sta
 ./dobi.sh test
 ```
 
-## Using dobi for doxygen documentation
+#### Using dobi for doxygen documentation
 
 This building block offers the possibility to generate documentation of your source code. The following tool is used for the execution.
 
@@ -115,13 +117,83 @@ With the following dobi command, the generation of the documentation of the samp
 
 Results can be found in subfolder: gen/doxygen
 
-### doxygen configuration
+##### doxygen configuration
 
 This building block provides a doxygen configuration file `service/Doxyfile`. Use this file to configure doxygen for your use.
 
 For further information how to configure doxygen, see:
 
 <https://www.doxygen.nl/manual/config.html>
+
+
+#### Using dobi to start debugging
+
+This building block provide a setup to debug a C++ component via remote debugging with a gdbserver.
+
+For this purpose a dobi job is provided to do the startup of a gdb server. For demonstration purposes the Hello World service was used as test application. To start the debug session, the following command can be used.
+
+```sh
+./dobi.sh debug
+```
+
+The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs. 
+
+Here is an example for the IDE vscode:
+
+##### Setup - IDE (vscode)
+
+Before debugging C++ code in Visual Studio Code (vscode) you have to install the extension 'Native Debug` by WebFreak <https://github.com/WebFreak001/code-debug>
+
+##### Debug configuration - launch.json
+This section describes the process of connecting to a remote gdb session via vscode.
+In order to make a remote gdb connection to the gdbserver running in the container you have to configure your launch.json.
+
+An example launch.json (.vscode/launch.json) for application cplusplus_service could look like this.
+
+- name: hello-world-x86_64 (remote gdb)
+
+- program: ${workspaceRoot}/gen/cplusplus-service-x86_64-dev/cplusplus_service
+
+- miDebuggerServerAddress: localhost:1234
+The Docker container starts a gdbserver at port 1234 and maps it to localhosts port 1234
+
+- sourceFileMap:
+The docker container mounts the C++ sources from  service to  /source in the container.
+
+Therefore a mapping from  /source to  service must be setup in the sourceFileMap.
+
+```sh
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "hello-world-x86_64 (remote gdb)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/gen/cplusplus-service-x86_64-dev/cplusplus_service",
+            "stopAtEntry": true,
+            "cwd": "${workspaceRoot}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "localhost:1234",
+            "sourceFileMap": {
+                "/source/": "${workspaceFolder}/service/"
+            },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+    ]
+}
+```
 
 ## Using concourse CI for a CI/CD build
 

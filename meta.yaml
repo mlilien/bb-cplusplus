@@ -50,3 +50,9 @@ alias=doxygen:
     - bb-cplusplus-doxygen
   annotations:
     description: "[alias] bb-cplusplus-doxygen"
+
+alias=debug:
+  tasks:
+    - bb-cplusplus-debug
+  annotations:
+    description: "[alias] bb-cplusplus-debug"
