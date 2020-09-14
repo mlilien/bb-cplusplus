@@ -25,24 +25,24 @@ alias=bb-cplusplus-deploy:
 
 alias=bb-cplusplus-analyze:
   tasks:
-    - cplusplus-service-analyze
+    - cplusplus-service-analyze-x86_64
   annotations:
-    description: "-> analyze all content"
+    description: "-> analyze cplusplus-service"
 
 alias=bb-cplusplus-test:
   tasks:
-    - cplusplus-service-test
+    - cplusplus-service-unit-test-run-x86_64
   annotations:
-    description: "-> test all content"
+    description: "-> run cplusplus-service unit test"
 
 alias=bb-cplusplus-doxygen:
   tasks:
-    - cplusplus-service-doxygen
+    - cplusplus-service-doxygen-x86_64
   annotations:
     description: "-> generate documentation with doxygen"    
 
 alias=bb-cplusplus-debug:
   tasks:
-    - cplusplus-service-debug
+    - cplusplus-service-debug-hello-world-x86_64
   annotations:
     description: "-> start gdbserver for debugging" 
