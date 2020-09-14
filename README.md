@@ -33,7 +33,7 @@ The images can be created locally manually or e.g. via dobi (<https://github.com
 
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
-By default seven dobi resources are predefined:
+Predifined resources were provided for these building block and are listed below: 
 
 ```sh
 ./dobi.sh build    # build the building block
