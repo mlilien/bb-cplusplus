@@ -8,3 +8,4 @@ local.env
 
 #ide
 .vscode
+!.vscode/launch.json

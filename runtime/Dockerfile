@@ -6,7 +6,7 @@ LABEL vendor="conplement AG"
 LABEL uri="https://github.com/elbb/bb-cplusplus"
 
 ARG DEV
-RUN if [ "${DEV}" = "1" ]; then export DEV_PACKAGES="gdb"; fi; \
+RUN if [ "${DEV}" = "1" ]; then export DEV_PACKAGES="gdbserver"; fi; \
     apt-get update &&  \
     apt-get install -y --no-install-recommends \
     gosu \

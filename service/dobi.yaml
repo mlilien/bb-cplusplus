@@ -249,21 +249,17 @@ job=cplusplus-service-analyze-x86_64:
     - "LOCAL_USER_ID={user.uid}"
     - "PROJECT={project}"
     - "CODECHECKER_URL={env.CODECHECKER_URL:}"
-  annotations:
-    description: "-> analyze cplusplus-service"
 
 job=cplusplus-service-unit-test-run-x86_64:
   use: image-cplusplus-builder
   depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
   mounts:
-    - mount-cplusplus-service-install-x86_64
+    - mount-cplusplus-service-install-x86_64 
   command: sh -c '
     cd /install
     && ./cplusplus_service_unit_test'
   env:
     - "LOCAL_USER_ID={user.uid}"
-  annotations:
-    description: "-> run cplusplus-service unit test"
 
 job=cplusplus-service-doxygen-x86_64:
   use: image-cplusplus-builder
@@ -276,9 +272,20 @@ job=cplusplus-service-doxygen-x86_64:
     - service
   env:
     - "LOCAL_USER_ID={user.uid}"
-  annotations:
-    description: "-> run cplusplus-service doxygen"
 
+job=cplusplus-service-debug-hello-world-x86_64:
+  use: image-cplusplus-runtime-x86_64-dev
+  depends:
+    - cplusplus-service-build-x86_64-dev
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-install-x86_64-dev
+  net-mode: '{env.NETWORK:}'
+  entrypoint: sh -c "/usr/local/bin/entrypoint.sh 'gdbserver :1234 /install/cplusplus_service'"
+  ports: ["1234:1234"]
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+ 
 # ===================================================
 # alias
 # ===================================================
@@ -288,15 +295,3 @@ alias=cplusplus-service-build:
     - image-cplusplus-service-x86_64-dev
     - image-cplusplus-service-aarch64
     - image-cplusplus-service-aarch64-dev
-
-alias=cplusplus-service-analyze:
-  tasks:
-    - cplusplus-service-analyze-x86_64
-
-alias=cplusplus-service-test:
-  tasks:
-    - cplusplus-service-unit-test-run-x86_64
-
-alias=cplusplus-service-doxygen:
-  tasks:
-    - cplusplus-service-doxygen-x86_64
