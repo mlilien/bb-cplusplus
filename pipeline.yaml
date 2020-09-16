@@ -120,58 +120,6 @@ jobs:
           file: gitversion/gitversion-*.tar.gz
           acl: public-read
 
-  - name: Create docker images for ((bb_name)) and push them
-    public: true
-    plan:
-      - in_parallel:
-          - get: source
-          - get: s3-gitversion
-            passed: [Generate gitversion and put it on S3]
-            trigger: true
-            params:
-              unpack: true
-      - in_parallel:
-          - put: image-((bb_name))-builder
-            params:
-              build: source/builder
-              dockerfile: source/builder/Dockerfile
-              tag_as_latest: ((bb_release_as_latest))
-              tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-runtime-x86_64
-            params:
-              build: source/runtime
-              build_args:
-                ARCH: "amd64"
-              dockerfile: source/runtime/Dockerfile
-              tag_as_latest: ((bb_release_as_latest))
-              tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-runtime-x86_64-dev
-            params:
-              build: source/runtime
-              build_args:
-                ARCH: "amd64"
-                DEV: "1"
-              dockerfile: source/runtime/Dockerfile
-              tag_as_latest: ((bb_release_as_latest))
-              tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-runtime-aarch64
-            params:
-              build: source/runtime
-              build_args:
-                ARCH: "arm64v8"
-              dockerfile: source/runtime/Dockerfile
-              tag_as_latest: ((bb_release_as_latest))
-              tag_file: s3-gitversion/gitversion/plain/BranchVersion
-          - put: image-((bb_name))-runtime-aarch64-dev
-            params:
-              build: source/runtime
-              build_args:
-                ARCH: "arm64v8"
-                DEV: "1"
-              dockerfile: source/runtime/Dockerfile
-              tag_as_latest: ((bb_release_as_latest))
-              tag_file: s3-gitversion/gitversion/plain/BranchVersion
-
   - name: Build cplusplus_service
     public: true
     plan:

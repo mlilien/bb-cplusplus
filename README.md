@@ -4,8 +4,6 @@
 
 This building block provides a way to build, run, debug, test, perform static code analysis and generate documentation of any C++ project in a containerized manner and offers:
 
--   C++ builder docker image
--   C++ runtime docker image
 -   local and CI/CD build system
 -   C++ Static Code Analyzer
 -   C++ Unit Test with doctest
@@ -40,7 +38,6 @@ Predifined resources were provided for these building block and are listed below
 ./dobi.sh test     # run all tests
 ./dobi.sh analyze  # perform static code analyze of the building block
 ./dobi.sh version  # generate version informations
-./dobi.sh deploy   # deploy the building block
 ./dobi.sh doxygen  # generate documentation with doxygen
 ./dobi.sh debug    # start gdbserver for debugging
 ```
