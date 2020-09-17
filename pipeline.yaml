@@ -36,6 +36,7 @@ resources:
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
+      tag: ((bb_builder_version))
 
   - name: image-((bb_name))-runtime-x86_64
     type: docker-image
@@ -44,28 +45,8 @@ resources:
       username: ((registry_user))
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
-  - name: image-((bb_name))-runtime-x86_64-dev
-    type: docker-image
-    source:
-      repository: ((bb_docker_namespace))/((bb_name))-runtime-x86_64-dev
-      username: ((registry_user))
-      password: ((registry_password))
-      insecure_registries: ((bb_insecure_registries))
-  - name: image-((bb_name))-runtime-aarch64
-    type: docker-image
-    source:
-      repository: ((bb_docker_namespace))/((bb_name))-runtime-aarch64
-      username: ((registry_user))
-      password: ((registry_password))
-      insecure_registries: ((bb_insecure_registries))
-  - name: image-((bb_name))-runtime-aarch64-dev
-    type: docker-image
-    source:
-      repository: ((bb_docker_namespace))/((bb_name))-runtime-aarch64-dev
-      username: ((registry_user))
-      password: ((registry_password))
-      insecure_registries: ((bb_insecure_registries))
-
+      tag: ((bb_runtime_version))
+      
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -125,11 +106,7 @@ jobs:
     plan:
       - in_parallel:
           - get: image-((bb_name))-builder
-            passed: [Create docker images for ((bb_name)) and push them]
-            trigger: true
           - get: image-((bb_name))-runtime-x86_64
-            passed: [Create docker images for ((bb_name)) and push them]
-            trigger: true
           - get: source
           - get: s3-gitversion
             passed: [Generate gitversion and put it on S3]

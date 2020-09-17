@@ -5,7 +5,6 @@
 meta:
   project: bb-cplusplus
   include:
-    - globals.yaml
     - dobi.yaml
     - version.yaml
     - service/dobi.yaml

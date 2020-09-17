@@ -55,31 +55,26 @@ mount=mount-cplusplus-service-doxygen:
 # ===================================================
 
 image=image-cplusplus-runtime-x86_64:
-  depends: [globals]
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-x86_64"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
 
 image=image-cplusplus-runtime-x86_64-dev:
-  depends: [globals]
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-x86_64-dev"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
 
 image=image-cplusplus-runtime-aarch64:
-  depends: [globals]
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-aarch64"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
       
 image=image-cplusplus-runtime-aarch64-dev:
-  depends: [globals]
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-aarch64-dev"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
         
 image=image-cplusplus-builder:
-  depends: [globals]
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-builder"
   tags: ["{env.VERSION_CPLUSPLUS_BUILDER_IMAGE}"]
   pull: once

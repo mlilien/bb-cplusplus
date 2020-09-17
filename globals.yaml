@@ -1,3 +1,0 @@
-env=globals:
-    variables: [ VERSION_CPLUSPLUS_BUILDER_IMAGE=0.1.0-2, 
-                 VERSION_CPLUSPLUS_RUNTIME_IMAGE=0.1.0-2 ]
