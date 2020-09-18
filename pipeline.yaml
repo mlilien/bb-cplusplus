@@ -1,3 +1,10 @@
+resource_types:
+  - name: teams-notification
+    type: docker-image
+    source:
+      repository: nexeck/concourse-teams-resource
+      tag: latest
+
 resources:
   - name: source
     type: git
@@ -47,6 +54,11 @@ resources:
       insecure_registries: ((bb_insecure_registries))
       tag: ((bb_runtime_version))
       
+  - name: alert
+    type: teams-notification
+    source:
+      url: ((ms_teams_channel_url))
+    
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -103,6 +115,21 @@ jobs:
 
   - name: Build cplusplus_service
     public: true
+    on_failure:
+      do:
+      - put: alert
+        params:
+          status: failure
+          text: |
+           [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) failed. :'(
+  
+    on_success:
+      do:
+      - put: alert
+        params:
+          status: success
+          text: |
+            [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) succeeded!    
     plan:
       - in_parallel:
           - get: image-((bb_name))-builder
