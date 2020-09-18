@@ -43,3 +43,8 @@ conan_ssl_verification: False
 
 # Codechecker config
 codechecker_url: http://codechecker-web:8001/Default
+
+# MS Teams Notification
+# -----------------------------------------------------------------------------
+## Specify the url of used ms teams notification 
+ms_teams_channel_url: https://outlook.office.com/webhook/9205aa0a-14bf-4482-b062-f5d77f33e5b1@ff930651-2670-491e-9a70-7847e7fbf8b7/IncomingWebhook/7e519cee9b3c4de4a4a1b63746009128/4722d7f9-842c-45f1-8861-28abfa7c02dd
