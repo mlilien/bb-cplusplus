@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -  added doctest and a unit test example
 -  added doxygen to generate source code documentation
 -  added gdbserver to start debugging the hello world service
+-  removing generation of builder and runtime images
 
 ## [0.1.0] - 2020-06-08
 

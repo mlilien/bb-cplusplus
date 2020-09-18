@@ -18,7 +18,7 @@ mount=mount-cplusplus-gitversion-gen-dir:
 
 image=image-cplusplus-gitversion:
   image: elbb/bb-gitversion
-  tags: ["0.6.2"]
+  tags: ["{env.VERSION_GITVERSION_IMAGE}"]
   pull: once
 
 # ===================================================

@@ -7,8 +7,6 @@ meta:
   include:
     - dobi.yaml
     - version.yaml
-    - builder/dobi.yaml
-    - runtime/dobi.yaml
     - service/dobi.yaml
 
 # ===================================================
@@ -26,12 +24,6 @@ alias=build:
     - bb-cplusplus-build
   annotations:
     description: "[alias] bb-cplusplus-build"
-
-alias=deploy:
-  tasks:
-    - bb-cplusplus-deploy
-  annotations:
-    description: "[alias] bb-cplusplus-deploy"
 
 alias=analyze:
   tasks:
