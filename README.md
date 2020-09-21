@@ -196,16 +196,66 @@ Therefore a mapping from  /source to  service must be setup in the sourceFileMap
 
 The pipeline file must be uploaded to concourse CI via `fly`.
 Enter the build users ssh private key into the file `ci/credentials.template.yaml` and rename it to `ci/credentials.yaml`.
+Copy the file `ci/email.template.yaml` to `ci/email.yaml` and enter the email server configuration and email addresses.
 
-**Note: `credentials.yaml` is ignored by `.gitignore` and will not be checked in.**
+**Note: `credentials.yaml` and `email.yaml` are ignored by `.gitignore` and will not be checked in.**
 
 In further releases there will be a key value store to keep track of the users credentials.
 Before setting the pipeline you might login first to your concourse instance `fly -t <target> login --concourse-url http://<concourse>:<port>`. See the [fly documentation](https://concourse-ci.org/fly.html) for more help.
 Upload the pipeline file with fly:
 
-    $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -c pipeline.yaml
+    $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -l ci/email.yaml -c pipeline.yaml
 
 After successfully uploading the pipeline to concourse CI login and unpause it. After that the pipeline should be triggered by new commits on the master branch (or new tags if enabled in `pipeline.yaml`).
+
+### Microsoft Teams notification
+
+In addition to email notification, it is possible to send a notification to Microsoft Teams about the current status of the ci build.
+
+#### MS Teams setup
+
+- Open the Microsoft Teams UI.
+- Identify the channel you wish to post notifications to - ie: #devops....
+- Open the "more options" menu of that channel and select "Connectors".
+- Select "Incoming Webhook" and respond to the propts for details like the icon and name of the connector.
+- Use the webhook url from above in your pipeline source definition. 
+
+The example below creates an alert resource. Each point in the pipeline labeled alert is a Microsoft Teams Connector message.
+
+#### pipeline configuration
+
+- add a new resource_type:
+
+```
+resource_types:
+  - name: teams-notification
+    type: docker-image
+    source:
+      repository: nexeck/concourse-teams-resource
+      tag: latest
+```
+
+- add a new resources:
+
+```
+resources:
+  - name: alert
+    type: teams-notification
+    source:
+      url: https://outlook.office.com/webhook/............
+```
+
+- finaly add a e.g. a on_success element to a job to trigger the alert
+
+```    
+on_success:
+  do:
+  - put: alert
+    params:
+      status: success
+      text: |
+      [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) succeeded!    
+```  
 
 # What is embedded linux building blocks
 
