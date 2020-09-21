@@ -1,0 +1,17 @@
+# Email Notification
+# -----------------------------------------------------------------------------
+email_smpt_host_url: smtp_host_url
+email_smpt_port: "smtp_port" # this must be a string
+email_smpt_user: smtp_user
+email_smpt_pw: smtp_passwort
+email_to: [ "email_address_of receiver_1" ]
+# email_to: [ "email_address_of receiver_1" , "email_address_of receiver_2" ] # syntax for 2 receiver
+email_from: email_address_of_sender
+email_smtp_ca_cert: |
+          -----BEGIN CERTIFICATE-----
+          MIIEdzCCA1+gAwIBAgINAe5fIi3nG0Ol1GafnjANBgkqhkiG9w0BAQsFADBMMSAw
+          HgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFs
+          ...............
+          GA9uXqsDj4J/okR7/ruByeEuh8aKWgBSmF7oFasKXPKdTbIS9D9FBPKbYvu1quvI
+          /AQsGpQZsvjRJbFu1gU20lhLYYC2PGK8owK23TZjOWglOnuii6MUGwkiMw==
+          -----END CERTIFICATE-----

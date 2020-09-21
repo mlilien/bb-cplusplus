@@ -1,8 +1,8 @@
 resource_types:
-  - name: teams-notification
+  - name: email
     type: docker-image
     source:
-      repository: nexeck/concourse-teams-resource
+      repository: pcfseceng/email-resource
       tag: latest
 
 resources:
@@ -54,6 +54,18 @@ resources:
       insecure_registries: ((bb_insecure_registries))
       tag: ((bb_runtime_version))
 
+  - name: send-an-email
+    type: email
+    source:
+      smtp:
+        host: ((email_smpt_host_url))
+        port: ((email_smpt_port))
+        username: ((email_smpt_user))
+        password: ((email_smpt_pw))
+        ca_cert: ((email_smtp_ca_cert))
+      from:  ((email_from))
+      to: ((email_to))      
+    
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -110,21 +122,41 @@ jobs:
 
   - name: Build cplusplus_service
     public: true
-    on_failure:
-      do:
-      - put: alert
-        params:
-          status: failure
-          text: |
-           [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) failed. :'(
-  
+
     on_success:
-      do:
-      - put: alert
-        params:
-          status: success
-          text: |
-            [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) succeeded!    
+      put: send-an-email
+      params:
+        subject_text: "elbb concourse ci: build ${BUILD_ID} success!"
+        body_text: |
+          Oh yes!
+          Build ID: ${BUILD_ID}
+          Build Name: ${BUILD_NAME}
+          Build Job Name: ${BUILD_JOB_NAME}
+          Build Pipeline Name: ${BUILD_PIPELINE_NAME}
+          ATC External URL: ${ATC_EXTERNAL_URL}
+    on_abort:
+      put: send-an-email
+      params:
+        subject_text: "elbb concourse ci: build ${BUILD_ID} aborted!"
+        body_text: |
+          Uups!
+          Build ID: ${BUILD_ID}
+          Build Name: ${BUILD_NAME}
+          Build Job Name: ${BUILD_JOB_NAME}
+          Build Pipeline Name: ${BUILD_PIPELINE_NAME}
+          ATC External URL: ${ATC_EXTERNAL_URL}
+    on_failure:
+      put: send-an-email
+      params:
+        subject_text: "elbb concourse ci: build ${BUILD_ID} failed!"
+        body_text: |
+          Oh no!
+          Build ID: ${BUILD_ID}
+          Build Name: ${BUILD_NAME}
+          Build Job Name: ${BUILD_JOB_NAME}
+          Build Pipeline Name: ${BUILD_PIPELINE_NAME}
+          ATC External URL: ${ATC_EXTERNAL_URL}             
+
     plan:
       - in_parallel:
           - get: image-((bb_name))-builder
