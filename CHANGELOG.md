@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -  added doxygen to generate source code documentation
 -  added gdbserver to start debugging the hello world service
 -  removing generation of builder and runtime images
--  added email notification for concourse co
+-  added email notification for concourse ci
 -  armv7 + aarch64 support
 
 ## [0.1.0] - 2020-06-08
