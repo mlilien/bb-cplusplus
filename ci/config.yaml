@@ -16,8 +16,8 @@ bb_release_as_latest: true
 bb_gitversion_version: 0.6.2
 
 ## Specifies the version used for cplusplus runtime and builder images
-bb_runtime_version: 0.1.0-5
-bb_builder_version: 0.1.0-5
+bb_runtime_version: 0.1.0-7
+bb_builder_version: 0.1.0-7
 
 # Git config
 # -----------------------------------------------------------------------------

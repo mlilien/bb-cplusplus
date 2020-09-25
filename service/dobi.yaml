@@ -42,13 +42,29 @@ mount=mount-cplusplus-service-install-aarch64-dev:
   bind: gen/cplusplus-service-aarch64-dev
   path: /install
 
+mount=mount-cplusplus-service-build-armv7hf:
+  bind: build/cplusplus-service-armv7hf
+  path: /build
+
+mount=mount-cplusplus-service-build-armv7hf-dev:
+  bind: build/cplusplus-service-armv7hf-dev
+  path: /build
+
+mount=mount-cplusplus-service-install-armv7hf:
+  bind: gen/cplusplus-service-armv7hf
+  path: /install
+
+mount=mount-cplusplus-service-install-armv7hf-dev:
+  bind: gen/cplusplus-service-armv7hf-dev
+  path: /install
+
 mount=mount-cplusplus-service-version:
   bind: gen/gitversion/cpp/elbb
   path: /usr/local/include/elbb
 
 mount=mount-cplusplus-service-doxygen:
   bind: gen/
-  path: /build 
+  path: /build
 
 # ===================================================
 # images
@@ -68,12 +84,22 @@ image=image-cplusplus-runtime-aarch64:
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-aarch64"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
-      
+
 image=image-cplusplus-runtime-aarch64-dev:
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-aarch64-dev"
   tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
   pull: once
-        
+
+image=image-cplusplus-runtime-armv7hf:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-armv7hf"
+  tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
+  pull: once
+
+image=image-cplusplus-runtime-armv7hf-dev:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-runtime-armv7hf-dev"
+  tags: ["{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"]
+  pull: once
+
 image=image-cplusplus-builder:
   image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-builder"
   tags: ["{env.VERSION_CPLUSPLUS_BUILDER_IMAGE}"]
@@ -132,6 +158,33 @@ image=image-cplusplus-service-aarch64-dev:
   args:
     BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
     RUNTIME_ARCH: "aarch64"
+    RUNTIME_TAG: "{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"
+    DEV: "1"
+
+image=image-cplusplus-service-armv7hf:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-armv7hf"
+  depends:
+    - cplusplus-service-build-armv7hf
+    - image-cplusplus-runtime-armv7hf
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "armv7hf"
+    RUNTIME_TAG: "{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"
+
+image=image-cplusplus-service-armv7hf-dev:
+  image: "{env.BB_DOCKER_NAMESPACE:elbb}/bb-cplusplus-service-armv7hf-dev"
+  depends:
+    - cplusplus-service-build-armv7hf-dev
+    - image-cplusplus-runtime-armv7hf-dev
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE:elbb}"
+    RUNTIME_ARCH: "armv7hf"
     RUNTIME_TAG: "{env.VERSION_CPLUSPLUS_RUNTIME_IMAGE}"
     DEV: "1"
 
@@ -254,6 +307,65 @@ job=cplusplus-service-build-aarch64-dev:
   annotations:
     description: "-> build dev cplusplus-service for aarch64"
 
+job=cplusplus-service-build-armv7hf:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-armv7hf
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-armv7hf
+    - mount-cplusplus-service-version
+  net-mode: '{env.NETWORK:}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-armv7hf/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=armv7hf"
+    - "CMAKE_BUILD_TYPE=Release"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build cplusplus-service for armv7hf"
+
+job=cplusplus-service-build-armv7hf-dev:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-armv7hf-dev
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-armv7hf-dev
+    - mount-cplusplus-service-version
+  net-mode: '{env.NETWORK:}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-armv7hf-dev/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=armv7hf"
+    - "CMAKE_BUILD_TYPE=Debug"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build dev cplusplus-service for armv7hf"
+
+
 job=cplusplus-service-analyze-x86_64:
   use: image-cplusplus-builder
   depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
@@ -282,7 +394,7 @@ job=cplusplus-service-unit-test-run-x86_64:
   use: image-cplusplus-builder
   depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
   mounts:
-    - mount-cplusplus-service-install-x86_64 
+    - mount-cplusplus-service-install-x86_64
   command: sh -c '
     cd /install
     && ./cplusplus_service_unit_test'
@@ -313,7 +425,7 @@ job=cplusplus-service-debug-hello-world-x86_64:
   ports: ["1234:1234"]
   env:
     - "LOCAL_USER_ID={user.uid}"
- 
+
 # ===================================================
 # alias
 # ===================================================
@@ -323,3 +435,5 @@ alias=cplusplus-service-build:
     - image-cplusplus-service-x86_64-dev
     - image-cplusplus-service-aarch64
     - image-cplusplus-service-aarch64-dev
+    - image-cplusplus-service-armv7hf
+    - image-cplusplus-service-armv7hf-dev

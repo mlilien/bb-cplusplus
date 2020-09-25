@@ -46,7 +46,7 @@ resources:
       password: ((registry_password))
       insecure_registries: ((bb_insecure_registries))
       tag: ((bb_runtime_version))
-      
+
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
@@ -175,6 +175,35 @@ jobs:
               INSTALL_DIR: "install-((bb_name))-aarch64"
               SOURCE_DIR: "source/service"
 
+        - task: Build cplusplus_service armv7hf
+          image: image-((bb_name))-builder
+          config:
+            platform: linux
+            inputs:
+              - name: source
+              - name: s3-gitversion
+            outputs:
+              - name: install-((bb_name))-armv7hf
+            run:
+              path: /bin/bash
+              args:
+                - -exc
+                - |
+                  chmod a+w . && chmod a+w ${INSTALL_DIR};
+                  /usr/local/bin/entrypoint.sh source/service/service.build.sh
+            params:
+              ARCH: "armv7hf"
+              BB_GITVERSION_INCLUDE_DIR: "s3-gitversion/gitversion/cpp"
+              BUILD_DIR: "build"
+              CMAKE_BUILD_TYPE: "Release"
+              CONAN_LOGIN_USERNAME: "((conan_user))"
+              CONAN_PASSWORD: "((conan_password))"
+              CONAN_REMOTE: "((conan_remote))"
+              CONAN_USER_HOME: "build"
+              CONAN_SSL_VERIFICATION: "((conan_ssl_verification))"
+              INSTALL_DIR: "install-((bb_name))-armv7hf"
+              SOURCE_DIR: "source/service"
+
       - in_parallel:
         - task: unittest
           image: image-((bb_name))-runtime-x86_64
@@ -220,7 +249,7 @@ jobs:
           config:
             platform: linux
             inputs:
-              - name: source         
+              - name: source
             run:
               path: /bin/bash
               args:
