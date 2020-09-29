@@ -58,10 +58,10 @@ resources:
     type: email
     source:
       smtp:
-        host: ((email_smpt_host_url))
-        port: ((email_smpt_port))
-        username: ((email_smpt_user))
-        password: ((email_smpt_pw))
+        host: ((email_smtp_host_url))
+        port: ((email_smtp_port))
+        username: ((email_smtp_user))
+        password: ((email_smtp_pw))
         ca_cert: ((email_smtp_ca_cert))
       from:  ((email_from))
       to: ((email_to))      
@@ -69,6 +69,30 @@ resources:
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
+
+    on_abort:
+      put: send-an-email
+      params:
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} aborted!"
+        body_text: |
+          Uups!
+          Build ID: ${BUILD_ID}
+          Build Name: ${BUILD_NAME}
+          Build Job Name: ${BUILD_JOB_NAME}
+          Build Pipeline Name: ${BUILD_PIPELINE_NAME}
+          ATC External URL: ${ATC_EXTERNAL_URL}
+    on_failure:
+      put: send-an-email
+      params:
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} failed!"
+        body_text: |
+          Oh no!
+          Build ID: ${BUILD_ID}
+          Build Name: ${BUILD_NAME}
+          Build Job Name: ${BUILD_JOB_NAME}
+          Build Pipeline Name: ${BUILD_PIPELINE_NAME}
+          ATC External URL: ${ATC_EXTERNAL_URL}   
+
     plan:
       - in_parallel:
           - get: image-bb-gitversion-tool
@@ -126,7 +150,7 @@ jobs:
     on_success:
       put: send-an-email
       params:
-        subject_text: "elbb concourse ci: build ${BUILD_ID} success!"
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} success!"
         body_text: |
           Oh yes!
           Build ID: ${BUILD_ID}
@@ -137,7 +161,7 @@ jobs:
     on_abort:
       put: send-an-email
       params:
-        subject_text: "elbb concourse ci: build ${BUILD_ID} aborted!"
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} aborted!"
         body_text: |
           Uups!
           Build ID: ${BUILD_ID}
@@ -148,7 +172,7 @@ jobs:
     on_failure:
       put: send-an-email
       params:
-        subject_text: "elbb concourse ci: build ${BUILD_ID} failed!"
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} failed!"
         body_text: |
           Oh no!
           Build ID: ${BUILD_ID}

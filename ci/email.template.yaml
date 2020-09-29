@@ -1,9 +1,9 @@
 # Email Notification
 # -----------------------------------------------------------------------------
-email_smpt_host_url: smtp_host_url
-email_smpt_port: "smtp_port" # this must be a string
-email_smpt_user: smtp_user
-email_smpt_pw: smtp_passwort
+email_smtp_host_url: smtp_host_url
+email_smtp_port: "smtp_port" # this must be a string
+email_smtp_user: smtp_user
+email_smtp_pw: smtp_passwort
 email_to: [ "email_address_of receiver_1" ]
 # email_to: [ "email_address_of receiver_1" , "email_address_of receiver_2" ] # syntax for 2 receiver
 email_from: email_address_of_sender
