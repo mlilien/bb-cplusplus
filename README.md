@@ -208,6 +208,13 @@ Upload the pipeline file with fly:
 
 After successfully uploading the pipeline to concourse CI login and unpause it. After that the pipeline should be triggered by new commits on the master branch (or new tags if enabled in `pipeline.yaml`).
 
+### Email notification
+
+The concourse ci environment automatically sends an e-mail notification about the current build status.
+For further information how to configure the email notification, see:
+
+<https://github.com/pivotal-cf/email-resource>
+
 ### Microsoft Teams notification
 
 In addition to email notification, it is possible to send a notification to Microsoft Teams about the current status of the ci build.
@@ -245,7 +252,7 @@ resources:
       url: https://outlook.office.com/webhook/............
 ```
 
-- finaly add a e.g. a on_success element to a job to trigger the alert
+- finaly add a on_success element to a job to trigger the alert
 
 ```    
 on_success:
@@ -255,6 +262,26 @@ on_success:
       status: success
       text: |
       [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) succeeded!    
+```  
+- if you like to trigger an alert on abort or on failure from a job, you can use these elements
+
+```    
+on_abort:
+  do:
+  - put: alert
+    params:
+      status: abort
+      text: |
+      [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) aborted!    
+```  
+```    
+on_failure:
+  do:
+  - put: alert
+    params:
+      status: failure
+      text: |
+      [$BUILD_PIPELINE_NAME/BUILD_JOB_NAME #$BUILD_NAME]($ATC_EXTERNAL_URL/builds/$BUILD_ID) failed!    
 ```  
 
 # What is embedded linux building blocks
