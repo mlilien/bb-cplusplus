@@ -3,7 +3,7 @@ resource_types:
     type: docker-image
     source:
       repository: pcfseceng/email-resource
-      tag: latest
+      tag: 1.0.19
 
 resources:
   - name: source
