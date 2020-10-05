@@ -196,16 +196,24 @@ Therefore a mapping from  /source to  service must be setup in the sourceFileMap
 
 The pipeline file must be uploaded to concourse CI via `fly`.
 Enter the build users ssh private key into the file `ci/credentials.template.yaml` and rename it to `ci/credentials.yaml`.
+Copy the file `ci/email.template.yaml` to `ci/email.yaml` and enter the email server configuration and email addresses.
 
-**Note: `credentials.yaml` is ignored by `.gitignore` and will not be checked in.**
+**Note: `credentials.yaml` and `email.yaml` are ignored by `.gitignore` and will not be checked in.**
 
 In further releases there will be a key value store to keep track of the users credentials.
 Before setting the pipeline you might login first to your concourse instance `fly -t <target> login --concourse-url http://<concourse>:<port>`. See the [fly documentation](https://concourse-ci.org/fly.html) for more help.
 Upload the pipeline file with fly:
 
-    $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -c pipeline.yaml
+    $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -l ci/email.yaml -c pipeline.yaml
 
 After successfully uploading the pipeline to concourse CI login and unpause it. After that the pipeline should be triggered by new commits on the master branch (or new tags if enabled in `pipeline.yaml`).
+
+### Email notification
+
+The concourse ci environment automatically sends an e-mail notification about the current build status.
+For further information how to configure the email notification, see:
+
+<https://github.com/pivotal-cf/email-resource>
 
 # What is embedded linux building blocks
 
