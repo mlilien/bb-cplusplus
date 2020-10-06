@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -  removing generation of builder and runtime images
 -  added email notification for concourse ci
 -  armv7 + aarch64 support
+-  add remote target debugging information
 
 ## [0.1.0] - 2020-06-08
 
