@@ -125,26 +125,15 @@ For further information how to configure doxygen, see:
 
 #### Using dobi to start debugging
 
-This building block provide a setup to debug a x86 C++ component via remote debugging with a gdbserver.
+This building block provides a setup to debug a x86 C++ component via remote debugging with a gdbserver.
 
-For this purpose a dobi job is provided to do the startup of a gdb server. For demonstration purposes the Hello World service was used as test application. To start the debug session, the following command can be used.
+For this purpose a dobi job is provided to do the startup of a gdbserver. For demonstration purposes, the Hello World service was used as test application. To start the debug session, the following command can be used.
 
 ```sh
 ./dobi.sh debug
 ```
 
 The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs. 
-
-##### Host precondition
-
-To be able to connect to the gdbserver running in the container, the host system shall be installed the "gdb-multiarch" debugger.
-
-You can install the gdb-multiarch tool with:
-
-```sh
-sudo apt-get update
-sudo apt-get install -y gdb-multiarch
-```
 
 ##### Setup - IDE (vscode)
 
@@ -154,17 +143,23 @@ Before debugging C++ code in Visual Studio Code (vscode) you have to install the
 This section describes the process of connecting to a remote gdb session via vscode.
 In order to make a remote gdb connection to the gdbserver running in the container you have to configure your launch.json.
 
+The gdb debugger itself, called gdb-multiarch, is availabe in a docker image elbb/bb-cplusplus-builder.
+A local installation of the gdb debugger is not neccessary on your host system.
+
+This buildblock provides a bash script, called gdb-multiarch.sh to handle the communication to the gdb debugger.
+
 An example launch.json (.vscode/launch.json) for application cplusplus_service could look like this.
 
 - name: hello-world-x86_64 (remote gdb)
 
-- program: ${workspaceRoot}/gen/cplusplus-service-x86_64-dev/cplusplus_service
+- program: /install/cplusplus_service<br>
+location of the binary file in the docker container
 
-- miDebuggerPath: "/usr/bin/gdb-multiarch"<br>
+- miDebuggerPath: "${workspaceFolder}/gdb-multiarch.sh"<br>
 location of the gdb-multiarch debugger of your host system
 
-- miDebuggerServerAddress: localhost:1234<br>
-The Docker container starts a gdbserver at port 1234 and maps it to localhosts port 1234
+- miDebuggerServerAddress: 172.20.0.1:1234<br>
+The Docker container starts a gdbserver at port 1234
 
 - sourceFileMap:
 The docker container mounts the C++ sources from  service to  /source in the container.
@@ -182,14 +177,15 @@ Therefore a mapping from  /source to  service must be setup in the sourceFileMap
             "name": "hello-world-x86_64 (remote gdb)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/gen/cplusplus-service-x86_64-dev/cplusplus_service",
+            "program": "/install/cplusplus_service",
             "stopAtEntry": true,
-            "cwd": "${workspaceRoot}",
+            "cwd": "/",
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb-multiarch",            
-            "miDebuggerServerAddress": "localhost:1234",
+            "miDebuggerPath": "${workspaceFolder}/gdb-multiarch.sh",
+            "miDebuggerServerAddress": "172.20.0.1:1234",
+            "miDebuggerArgs": "x86_64",
             "sourceFileMap": {
                 "/source/": "${workspaceFolder}/service/"
             },
@@ -207,7 +203,7 @@ Therefore a mapping from  /source to  service must be setup in the sourceFileMap
 
 #### Remote target debugging
 
-This building block provides also a cross-compiled "service hello world example" for aarch64 and armv7 architecture. 
+This building block provides also a cross-compiled "service hello world example" for aarch64 and armv7hf architectures. 
 
 The next steps are exemplary for the aarch64 architecture and show the way to remote debugging on the target.
 
@@ -218,12 +214,12 @@ The next steps are exemplary for the aarch64 architecture and show the way to re
 ./dobi.sh cplusplus-service-build-aarch64-dev
 ```
 **at target system**
-- store the docker image on your target
+- pull the docker image
 
-- start the docker image on your target
+- start the docker image e.g.
 
 ```sh
-docker run --rm -it --privileged --entrypoint /bin/bash -p 1234:1234 xxXXxxXX/bb-cplusplus-service-aarch64-dev
+docker run --rm -it --entrypoint /bin/bash -p 1234:1234 elbb/bb-cplusplus-service-aarch64-dev
 ```
 
 - start gdbserver in running target container
@@ -233,7 +229,7 @@ gdbserver :1234 /usr/local/bin/cplusplus_service
 ```
 **at host system**
 
-This buildblock provide a visual studio code example debug file (.vscode/launch.json).
+This buildblock provides a visual studio code example debug file (.vscode/launch.json).
 
 - open launch.json
 
