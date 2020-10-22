@@ -133,10 +133,11 @@ For this purpose a dobi job is provided to do the startup of a gdbserver. For de
 ./dobi.sh debug
 ```
 
-The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs. 
+The gdbserver is now ready and waiting for a connection to a gdb debugger.
 
 ##### Setup - IDE (vscode)
 
+The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs.
 Before debugging C++ code in Visual Studio Code (vscode) you have to install the extension 'Native Debug` by WebFreak <https://github.com/WebFreak001/code-debug>
 
 ##### Debug configuration - launch.json
@@ -146,7 +147,7 @@ In order to make a remote gdb connection to the gdbserver running in the contain
 The gdb debugger itself, called gdb-multiarch, is availabe in a docker image elbb/bb-cplusplus-builder.
 A local installation of the gdb debugger is not neccessary on your host system.
 
-This buildblock provides a bash script, called gdb-multiarch.sh to handle the communication to the gdb debugger.
+This buildblock provides a bash script, called gdb-multiarch.sh to handle the communication to the dockerized gdb debugger.
 
 An example launch.json (.vscode/launch.json) for application cplusplus_service could look like this.
 
