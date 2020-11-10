@@ -68,23 +68,11 @@ resources:
         host_origin: ((email_smtp_host_origin))
         login_auth: ((email_smtp_login_auth))
       from:  ((email_from))
-      to: ((email_to))      
+      to: ((email_to))
 
 jobs:
   - name: Generate gitversion and put it on S3
     public: true
-
-    on_abort:
-      put: send-an-email
-      params:
-        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} aborted!"
-        body_text: |
-          Uups!
-          Build ID: "${BUILD_ID}"
-          Build Name: "${BUILD_NAME}"
-          Build Job Name: "${BUILD_JOB_NAME}"
-          Build Pipeline Name: "${BUILD_PIPELINE_NAME}"
-          ATC External URL: "${ATC_EXTERNAL_URL}"
     on_failure:
       put: send-an-email
       params:
@@ -150,24 +138,12 @@ jobs:
 
   - name: Build cplusplus_service
     public: true
-
     on_success:
       put: send-an-email
       params:
-        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} success!"
+        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} successfully finished"
         body_text: |
-          Oh yes!
-          Build ID: "${BUILD_ID}"
-          Build Name: "${BUILD_NAME}"
-          Build Job Name: "${BUILD_JOB_NAME}"
-          Build Pipeline Name: "${BUILD_PIPELINE_NAME}"
-          ATC External URL: "${ATC_EXTERNAL_URL}"
-    on_abort:
-      put: send-an-email
-      params:
-        subject_text: "ci ${BUILD_PIPELINE_NAME}: build ${BUILD_ID} aborted!"
-        body_text: |
-          Uups!
+          Yeah!
           Build ID: "${BUILD_ID}"
           Build Name: "${BUILD_NAME}"
           Build Job Name: "${BUILD_JOB_NAME}"

@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/elbb/bb-buildingblock/master/.assets/logo.png" height="200">
 
-# # (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
+# (e)mbedded (l)inux (b)uilding (b)locks - containerized C++ build and runtime environment
 
 This building block provides a way to build, run, debug, test, perform static code analysis and generate documentation of any C++ project in a containerized manner and offers:
 
@@ -9,29 +9,22 @@ This building block provides a way to build, run, debug, test, perform static co
 -   C++ Unit Test with doctest
 -   generation of documentation with doxygen
 -   debugging hello world service with gdbserver
+-   signal handling (e.g. `SIGTERM`) in the example application
 
-There is also an example that shows the usage with a 'hello world' application.
+There is also an example that shows the usage with a `hello world` service. This `hello world` service application implements signal handling and terminates on `SIGTERM`. Together with the runtime image from [bb-cplusplus-container-images](https://github.com/elbb/bb-cplusplus-container-images) which traps and forwards signals in its entrypoint, it provides an example how to handle signals in a C++ docker service.
 
-# Build
-
-It is highly recommended to modify this building block for your needs. For the integration
-into your project you should modify the builder and runtime Dockerfiles.
-
-The images can be created locally manually or e.g. via dobi (<https://github.com/dnephin/dobi>) or via concourse CI.
+## Prerequisites
+-   [docker](https://docs.docker.com/install/)
+-   [dobi](https://github.com/dnephin/dobi) (downloaded if not in `PATH`)
+-   [qemu-user-static](https://github.com/multiarch/qemu-user-static#getting-started)
+-   [concourse](https://concourse-ci.org/) (ci/cd)
+-   [JFrog Artifactory Community Edition for C/C++](<https://bintray.com/jfrog/product/JFrog-Artifactory-Cpp-CE/view>) (also available in dev environment <https://github.com/elbb/elbb-dev-environment>) (optional for dobi targets, mandatory for usage of the concourse ci/cd pipeline)
 
 ## Using dobi for local build
 
-### Prerequisites
-
--   dobi (<https://github.com/dnephin/dobi>)
--   docker (<https://docs.docker.com/install/>)
--   JFrog Artifactory Community Edition for C/C++ (<https://bintray.com/jfrog/product/JFrog-Artifactory-Cpp-CE/view>) (also available in dev environment <https://github.com/elbb/elbb-dev-environment>) (optional for dobi, mandatory for usage of the concourse ci/cd pipeline)
-
-### Using dobi
-
 dobi should only be used via the `dobi.sh` script, because there important variables are set and the right scripts are included.
 
-Predifined resources were provided for these building block and are listed below: 
+Predifined resources were provided for this building block and are listed below:
 
 ```sh
 ./dobi.sh build    # build the building block
@@ -42,8 +35,6 @@ Predifined resources were provided for these building block and are listed below
 ./dobi.sh debug    # start gdbserver for debugging
 ```
 
-#### Using dobi for build
-
 The alias `build` in this building block calls all dobi c++ build jobs. These c++ build jobs use conan to cross compile artifacts. Conan builds necessary dependent artifacts. By default these build jobs use a docker container connected to the `elbb-dev` docker network running the builder image. These build jobs try to upload dependent artifacts to a conan artifactory in this docker network. E.g. you can use the dev environment (<https://github.com/elbb/elbb-dev-environment>) to use a local conan artifactory. This is an optional feature though, the build job will not fail if uploading fails.
 
 If you want to use the optional conan artifactory, you can configure it via the following environment variables:
@@ -52,10 +43,10 @@ If you want to use the optional conan artifactory, you can configure it via the 
 NETWORK=yourDockerNetwork CONAN_REMOTE=yourConanArtifactoryURL CONAN_LOGIN_USERNAME=yourUsername CONAN_PASSWORD=yourPassword CONAN_SSL_VERIFICATION=false ./dobi.sh build
 ```
 
-A more convenient way is to set these environment variables in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
+A more convenient way is to set these environment variables in a `local.env` file. See "[Local project variables](#local-project-variables)".
 
 
-#### Using dobi for static code analysis
+### Using dobi for static code analysis
 
 This building block offers the possibility to perform a static code analysis. The following tools and analyzers are used for the execution.
 
@@ -88,7 +79,7 @@ CODECHECKER_URL=http://codechecker-web:8001/Default NETWORK=yourDockerNetwork ./
 A more convenient way is to set this environment variable in a `local.env` file. Copy `local.env.template` to `local.env` and adapt `local.env` accordingly.
 
 
-#### Using dobi for unit test
+### Using dobi for unit test
 
 This building block offers the possibility to perform a unit test of your source code. The following tool is used for the execution.
 
@@ -100,7 +91,7 @@ With the following dobi command, a example unit test of a sample code can be sta
 ./dobi.sh test
 ```
 
-#### Using dobi for doxygen documentation
+### Using dobi for doxygen documentation
 
 This building block offers the possibility to generate documentation of your source code. The following tool is used for the execution.
 
@@ -114,7 +105,7 @@ With the following dobi command, the generation of the documentation of the samp
 
 Results can be found in subfolder: gen/doxygen
 
-##### doxygen configuration
+#### doxygen configuration
 
 This building block provides a doxygen configuration file `service/Doxyfile`. Use this file to configure doxygen for your use.
 
@@ -123,7 +114,7 @@ For further information how to configure doxygen, see:
 <https://www.doxygen.nl/manual/config.html>
 
 
-#### Using dobi to start debugging
+### Using dobi to start debugging
 
 This building block provide a setup to debug a C++ component via remote debugging with a gdbserver.
 
@@ -133,15 +124,15 @@ For this purpose a dobi job is provided to do the startup of a gdb server. For d
 ./dobi.sh debug
 ```
 
-The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs. 
+The navigation through the code, display of variables, setting breakpoints, etc., can be done with Visual Studio code or similar IDEs.
 
 Here is an example for the IDE vscode:
 
-##### Setup - IDE (vscode)
+#### Setup - IDE (vscode)
 
 Before debugging C++ code in Visual Studio Code (vscode) you have to install the extension 'Native Debug` by WebFreak <https://github.com/WebFreak001/code-debug>
 
-##### Debug configuration - launch.json
+#### Debug configuration - launch.json
 This section describes the process of connecting to a remote gdb session via vscode.
 In order to make a remote gdb connection to the gdbserver running in the container you have to configure your launch.json.
 
@@ -192,11 +183,21 @@ Therefore a mapping from  /source to  service must be setup in the sourceFileMap
 }
 ```
 
+### Default project variables
+
+Edit `./default.env` to set default project variables.
+
+### Local project variables
+
+If you want to override project variables, copy `./local.env.template` to `./local.env` and edit `./local.env` accordingly.<br>
+`./local.env` is ignored by git via `./.gitignore`.
+
 ## Using concourse CI for a CI/CD build
 
 The pipeline file must be uploaded to concourse CI via `fly`.
 Enter the build users ssh private key into the file `ci/credentials.template.yaml` and rename it to `ci/credentials.yaml`.
 Copy the file `ci/email.template.yaml` to `ci/email.yaml` and enter the email server configuration and email addresses.
+For further information how to configure the email notification, see: <https://github.com/pivotal-cf/email-resource>
 
 **Note: `credentials.yaml` and `email.yaml` are ignored by `.gitignore` and will not be checked in.**
 
@@ -207,13 +208,6 @@ Upload the pipeline file with fly:
     $ fly -t <target> set-pipeline -n -p bb-cplusplus -l ci/config.yaml -l ci/credentials.yaml -l ci/email.yaml -c pipeline.yaml
 
 After successfully uploading the pipeline to concourse CI login and unpause it. After that the pipeline should be triggered by new commits on the master branch (or new tags if enabled in `pipeline.yaml`).
-
-### Email notification
-
-The concourse ci environment automatically sends an e-mail notification about the current build status.
-For further information how to configure the email notification, see:
-
-<https://github.com/pivotal-cf/email-resource>
 
 # What is embedded linux building blocks
 

@@ -2,12 +2,12 @@
 # mount points
 # ===================================================
 
-mount=mount-cplusplus-gitversion-source-dir:
+mount=mount-buildingblock-gitversion-source-dir:
   bind: "{fs.projectdir}"
   path: /git
   read-only: false # needs to be read/write to work correctly!
 
-mount=mount-cplusplus-gitversion-gen-dir:
+mount=mount-buildingblock-gitversion-gen-dir:
   bind: "{fs.projectdir}/gen/gitversion"
   path: /gen
   read-only: false
@@ -16,21 +16,27 @@ mount=mount-cplusplus-gitversion-gen-dir:
 # images
 # ===================================================
 
-image=image-cplusplus-gitversion:
+image=image-buildingblock-gitversion:
   image: elbb/bb-gitversion
-  tags: ["{env.VERSION_GITVERSION_IMAGE}"]
+  tags: ["{env.VERSION_BB_GITVERSION}"]
   pull: once
 
 # ===================================================
 # jobs
 # ===================================================
 
-job=cplusplus-version:
-  use: image-cplusplus-gitversion
+job=version:
+  use: image-buildingblock-gitversion
   mounts:
-    - mount-cplusplus-gitversion-source-dir
-    - mount-cplusplus-gitversion-gen-dir
-  sources: "./"
-  artifact: "gen/gitversion/"
+    - mount-buildingblock-gitversion-source-dir
+    - mount-buildingblock-gitversion-gen-dir
+  # DISABLED: validating 'sources' and 'artifact' takes longer then generating
+  # version info, because we generates a lot of files in './gen/cplusplus*' and './build'.
+  # Unfortunately dobi doesnt support masking subdirectories of 'sources'.
+
+  # sources: "./"
+  # artifact: "gen/gitversion/"
   env:
     - "USERID={user.uid}"
+  annotations:
+    description: "-> generate version informations (auto called by dobi.sh)"

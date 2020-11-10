@@ -1,39 +1,448 @@
 # ===================================================
-# alias
+# mounts
+# ===================================================
+mount=mount-cplusplus-service-source:
+  bind: service
+  path: /source
+  read-only: true
+
+mount=mount-cplusplus-service-build-x86_64:
+  bind: build/cplusplus-service-x86_64
+  path: /build
+
+mount=mount-cplusplus-service-build-x86_64-dev:
+  bind: build/cplusplus-service-x86_64-dev
+  path: /build
+
+mount=mount-cplusplus-service-build-buildscript:
+  bind: service/service.build.sh
+  path: /service.build.sh
+
+mount=mount-cplusplus-service-install-x86_64:
+  bind: gen/cplusplus-service-x86_64
+  path: /install
+
+mount=mount-cplusplus-service-install-x86_64-dev:
+  bind: gen/cplusplus-service-x86_64-dev
+  path: /install
+
+mount=mount-cplusplus-service-build-aarch64:
+  bind: build/cplusplus-service-aarch64
+  path: /build
+
+mount=mount-cplusplus-service-build-aarch64-dev:
+  bind: build/cplusplus-service-aarch64-dev
+  path: /build
+
+mount=mount-cplusplus-service-install-aarch64:
+  bind: gen/cplusplus-service-aarch64
+  path: /install
+
+mount=mount-cplusplus-service-install-aarch64-dev:
+  bind: gen/cplusplus-service-aarch64-dev
+  path: /install
+
+mount=mount-cplusplus-service-build-armv7hf:
+  bind: build/cplusplus-service-armv7hf
+  path: /build
+
+mount=mount-cplusplus-service-build-armv7hf-dev:
+  bind: build/cplusplus-service-armv7hf-dev
+  path: /build
+
+mount=mount-cplusplus-service-install-armv7hf:
+  bind: gen/cplusplus-service-armv7hf
+  path: /install
+
+mount=mount-cplusplus-service-install-armv7hf-dev:
+  bind: gen/cplusplus-service-armv7hf-dev
+  path: /install
+
+mount=mount-cplusplus-service-version:
+  bind: gen/gitversion/cpp/elbb
+  path: /usr/local/include/elbb
+
+mount=mount-cplusplus-service-doxygen:
+  bind: gen/
+  path: /build
+
+# ===================================================
+# images
 # ===================================================
 
-alias=bb-cplusplus-version:
-  tasks:
-    - cplusplus-version
-  annotations:
-    description: "-> generate version informations (auto called by dobi.sh)"
+image=image-cplusplus-runtime-x86_64:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-x86_64"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
 
-alias=bb-cplusplus-build:
-  tasks:
-    - cplusplus-service-build
-  annotations:
-    description: "-> build all content"
+image=image-cplusplus-runtime-x86_64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-x86_64-dev"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
 
-alias=bb-cplusplus-analyze:
-  tasks:
-    - cplusplus-service-analyze-x86_64
-  annotations:
-    description: "-> analyze cplusplus-service"
+image=image-cplusplus-runtime-aarch64:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-aarch64"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
 
-alias=bb-cplusplus-test:
-  tasks:
-    - cplusplus-service-unit-test-run-x86_64
-  annotations:
-    description: "-> run cplusplus-service unit test"
+image=image-cplusplus-runtime-aarch64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-aarch64-dev"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
 
-alias=bb-cplusplus-doxygen:
-  tasks:
-    - cplusplus-service-doxygen-x86_64
-  annotations:
-    description: "-> generate documentation with doxygen"    
+image=image-cplusplus-runtime-armv7hf:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-armv7hf"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
 
-alias=bb-cplusplus-debug:
-  tasks:
-    - cplusplus-service-debug-hello-world-x86_64
+image=image-cplusplus-runtime-armv7hf-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-runtime-armv7hf-dev"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_RUNTIME}"]
+  pull: once
+
+image=image-cplusplus-builder:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-builder"
+  tags: ["{env.VERSION_BB_CPLUSPLUS_BUILDER}"]
+  pull: once
+
+# -----------------------------------------------------
+
+image=image-cplusplus-service-x86_64:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-x86_64"
+  depends:
+   - cplusplus-service-build-x86_64
+   - image-cplusplus-runtime-x86_64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "x86_64"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+
+image=image-cplusplus-service-x86_64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-x86_64-dev"
+  depends:
+   - cplusplus-service-build-x86_64-dev
+   - image-cplusplus-runtime-x86_64-dev
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "x86_64"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+    DEV: "1"
+
+image=image-cplusplus-service-aarch64:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-aarch64"
+  depends:
+   - cplusplus-service-build-aarch64
+   - image-cplusplus-runtime-aarch64
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "aarch64"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+
+image=image-cplusplus-service-aarch64-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-aarch64-dev"
+  depends:
+   - cplusplus-service-build-aarch64-dev
+   - image-cplusplus-runtime-aarch64-dev
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "aarch64"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+    DEV: "1"
+
+image=image-cplusplus-service-armv7hf:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-armv7hf"
+  depends:
+    - cplusplus-service-build-armv7hf
+    - image-cplusplus-runtime-armv7hf
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "armv7hf"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+
+image=image-cplusplus-service-armv7hf-dev:
+  image: "{env.BB_DOCKER_NAMESPACE}/bb-cplusplus-service-armv7hf-dev"
+  depends:
+    - cplusplus-service-build-armv7hf-dev
+    - image-cplusplus-runtime-armv7hf-dev
+  context: .
+  dockerfile: service/Dockerfile.dobi
+  tags: ["{env.GitVersion_BranchVersion}"]
+  args:
+    BB_DOCKER_NAMESPACE: "{env.BB_DOCKER_NAMESPACE}"
+    RUNTIME_ARCH: "armv7hf"
+    RUNTIME_TAG: "{env.VERSION_BB_CPLUSPLUS_RUNTIME}"
+    DEV: "1"
+
+# ===================================================
+# jobs
+# ===================================================
+job=cplusplus-service-build-x86_64:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-x86_64
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-x86_64/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=x86_64"
+    - "CMAKE_BUILD_TYPE=Release"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
   annotations:
-    description: "-> start gdbserver for debugging" 
+    description: "-> build cplusplus-service for x86_64"
+
+job=cplusplus-service-build-x86_64-dev:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-x86_64-dev
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-x86_64-dev
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-x86_64-dev/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=x86_64"
+    - "CMAKE_BUILD_TYPE=Debug"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build dev cplusplus-service for x86_64"
+
+job=cplusplus-service-build-aarch64:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-aarch64
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-aarch64
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-aarch64/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=aarch64"
+    - "CMAKE_BUILD_TYPE=Release"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build cplusplus-service for aarch64"
+
+job=cplusplus-service-build-aarch64-dev:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-aarch64-dev
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-aarch64-dev
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-aarch64-dev/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=aarch64"
+    - "CMAKE_BUILD_TYPE=Debug"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build dev cplusplus-service for aarch64"
+
+job=cplusplus-service-build-armv7hf:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-armv7hf
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-armv7hf
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-armv7hf/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=armv7hf"
+    - "CMAKE_BUILD_TYPE=Release"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build cplusplus-service for armv7hf"
+
+job=cplusplus-service-build-armv7hf-dev:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-armv7hf-dev
+    - mount-cplusplus-service-build-buildscript
+    - mount-cplusplus-service-install-armv7hf-dev
+    - mount-cplusplus-service-version
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'chmod +x /service.build.sh && /service.build.sh'
+  sources: service/
+  artifact: gen/cplusplus-service-armv7hf-dev/cplusplus_service
+  env:
+    - "BUILD_DIR=/build"
+    - "INSTALL_DIR=/install"
+    - "LOCAL_USER_ID={user.uid}"
+    - "VERBOSE={env.VERBOSE:}"
+    - "BB_GITVERSION_INCLUDE_DIR=/usr/local/include"
+    - "ARCH=armv7hf"
+    - "CMAKE_BUILD_TYPE=Debug"
+    - "CONAN_REMOTE={env.CONAN_REMOTE:}"
+    - "CONAN_LOGIN_USERNAME={env.CONAN_LOGIN_USERNAME:}"
+    - "CONAN_PASSWORD={env.CONAN_PASSWORD:}"
+    - "CONAN_SSL_VERIFICATION={env.CONAN_SSL_VERIFICATION:False}"
+    - "SOURCE_DIR=/source"
+  annotations:
+    description: "-> build dev cplusplus-service for armv7hf"
+
+job=analyze:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-build-x86_64
+    - mount-cplusplus-service-install-x86_64
+    - mount-cplusplus-service-version
+  # Connect the container to the `dev environment` network
+  net-mode: '{env.DOCKER_NETWORK}'
+  command: sh -c 'if [ -z "${CODECHECKER_URL}" ]; then CODECHECKER_URL="http://codechecker-web:8001/Default"; fi; echo ${CODECHECKER_URL};
+            cd /build
+            && CodeChecker analyze compile_commands.json -o /install/reports/
+            && CodeChecker store /install/reports/ --name "${PROJECT}" --url ${CODECHECKER_URL}
+            && touch /install/reports/codechecker.success'
+  sources:
+    - service/
+  artifact:
+    - gen/cplusplus-service-x86_64/reports/codechecker.success
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+    - "PROJECT={project}"
+    - "CODECHECKER_URL={env.CODECHECKER_URL:}"
+  annotations:
+    description: "-> analyze with CodeChecker"
+
+job=test:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
+  mounts:
+    - mount-cplusplus-service-install-x86_64
+  command: sh -c '
+    cd /install
+    && ./cplusplus_service_unit_test'
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+  annotations:
+    description: "-> run unit test"
+
+job=doxygen:
+  use: image-cplusplus-builder
+  depends: [image-cplusplus-builder, cplusplus-service-build-x86_64]
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-doxygen
+  command: sh -c 'cd /source/doxygen; doxygen Doxyfile'
+  sources:
+    - service
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+  annotations:
+    description: "-> generate Doxygen documentation"
+
+job=debug:
+  use: image-cplusplus-runtime-x86_64-dev
+  depends:
+    - cplusplus-service-build-x86_64-dev
+  mounts:
+    - mount-cplusplus-service-source
+    - mount-cplusplus-service-install-x86_64-dev
+  net-mode: '{env.DOCKER_NETWORK}'
+  entrypoint: sh -c "/usr/local/bin/entrypoint.sh 'gdbserver :1234 /install/cplusplus_service'"
+  ports: ["1234:1234"]
+  env:
+    - "LOCAL_USER_ID={user.uid}"
+  annotations:
+    description: "-> debug hello world service"
+
+# ===================================================
+# alias
+# ===================================================
+alias=build:
+  tasks:
+    - image-cplusplus-service-x86_64
+    - image-cplusplus-service-x86_64-dev
+    - image-cplusplus-service-aarch64
+    - image-cplusplus-service-aarch64-dev
+    - image-cplusplus-service-armv7hf
+    - image-cplusplus-service-armv7hf-dev
+  annotations:
+    description: "-> build all"
